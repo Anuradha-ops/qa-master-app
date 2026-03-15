@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Software Testing Roadmap</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #0a0a0f; color: #fff; font-family: Georgia, serif; padding: 24px 14px 60px; }
+  .header { text-align: center; margin-bottom: 32px; }
+  .sub { font-size: 10px; letter-spacing: 5px; color: #00D4FF; margin-bottom: 8px; font-family: monospace; }
+  h1 { font-size: clamp(26px, 8vw, 48px); font-style: italic; font-weight: 900; line-height: 1.15;
+       background: linear-gradient(135deg, #fff 0%, #00D4FF 50%, #C77DFF 100%);
+       -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 10px; }
+  .hint { font-size: 11px; color: #555; letter-spacing: 2px; font-family: monospace; margin-bottom: 16px; }
+  .legend { display: flex; justify-content: center; gap: 16px; flex-wrap: wrap; margin-bottom: 8px; }
+  .leg { display: flex; align-items: center; gap: 5px; font-size: 10px; color: #666; font-family: monospace; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; }
+  .cards { max-width: 540px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px; }
+  .card { border-radius: 10px; border: 1.5px solid #1e1e32; background: #0f0f1a; overflow: hidden; }
+  .card-header { display: flex; align-items: center; gap: 12px; padding: 16px; cursor: pointer; -webkit-tap-highlight-color: transparent; user-select: none; }
+  .icon-box { width: 46px; height: 46px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
+  .phase-label { font-size: 9px; color: #444; letter-spacing: 3px; font-family: monospace; }
+  .phase-title { font-size: 16px; font-weight: bold; font-style: italic; color: #fff; }
+  .right { display: flex; flex-direction: column; align-items: flex-end; gap: 5px; margin-left: auto; }
+  .status-badge { font-size: 9px; padding: 2px 8px; border-radius: 20px; font-family: monospace; white-space: nowrap; }
+  .toggle { font-size: 26px; font-weight: 300; font-family: monospace; line-height: 1; }
+  .pills { display: flex; flex-wrap: wrap; gap: 5px; padding: 0 16px 14px; }
+  .pill { font-size: 10px; padding: 3px 8px; border-radius: 4px; font-family: monospace; }
+  .body { padding: 0 16px 16px; display: none; }
+  .tip-box { background: #1c0a20; border: 1px solid #F7258577; border-radius: 8px; padding: 12px 14px; margin-bottom: 14px; }
+  .tip-label { font-size: 9px; color: #F72585; letter-spacing: 2px; font-family: monospace; margin-bottom: 5px; }
+  .tip-text { font-size: 12px; color: #bbb; line-height: 1.7; font-family: monospace; }
+  .topics { display: flex; flex-direction: column; gap: 12px; padding-top: 14px; }
+  .topic { display: flex; gap: 12px; align-items: flex-start; }
+  .check { width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; flex-shrink: 0; margin-top: 2px; font-family: monospace; }
+  .topic-name { font-size: 13px; font-weight: bold; font-style: italic; }
+  .topic-desc { font-size: 11px; color: #444; margin-top: 2px; font-family: monospace; }
+  .footer { text-align: center; margin-top: 28px; }
+  .footer-badge { display: inline-block; padding: 12px 32px; border: 1px solid #F72585; color: #F72585; font-size: 11px; letter-spacing: 3px; border-radius: 8px; font-family: monospace; }
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="sub">◈ ANURADHA'S BLUEPRINT ◈</div>
+  <h1>Software Testing<br>Roadmap</h1>
+  <div class="hint">TAP ANY CARD TO EXPAND</div>
+  <div class="legend">
+    <div class="leg"><div class="dot" style="background:#6BCB77"></div>Mastered</div>
+    <div class="leg"><div class="dot" style="background:#FFD93D"></div>Strengthen</div>
+    <div class="leg"><div class="dot" style="background:#F72585"></div>Cognizant Tip</div>
+  </div>
+</div>
+
+<div class="cards" id="cards"></div>
+
+<div class="footer"><div class="footer-badge">★ QUALITY ENGINEER ★</div></div>
+
+<script>
+const data = [
+  { phase:"01", title:"Foundations", color:"#00D4FF", icon:"⬡", statusLabel:"✓ Mastered", statusColor:"#6BCB77", tip:null,
+    topics:[
+      {name:"SDLC & STLC", desc:"Software & Testing Life Cycles", done:true},
+      {name:"Testing Principles", desc:"7 Principles of Software Testing", done:true},
+      {name:"Types of Testing", desc:"Manual vs Automation, Black/White/Grey Box", done:true},
+      {name:"Test Levels", desc:"Unit, Integration, System, Acceptance", done:true},
+      {name:"Bug Life Cycle", desc:"Reporting, Tracking & Closure", done:true},
+    ]},
+  { phase:"02", title:"Manual Testing", color:"#FF6B6B", icon:"◈", statusLabel:"✓ Mastered", statusColor:"#6BCB77", tip:null,
+    topics:[
+      {name:"Test Planning", desc:"Strategy, Scope, Objectives", done:true},
+      {name:"Test Design Techniques", desc:"BVA, EP, Decision Table, State Transition", done:true},
+      {name:"Test Case Writing", desc:"Templates, Coverage & Review", done:true},
+      {name:"Defect Management", desc:"Jira, Bugzilla, Severity & Priority", done:true},
+      {name:"Test Execution & Reporting", desc:"Test Cycles, Summary Reports", done:true},
+    ]},
+  { phase:"03", title:"Agile & Methodologies", color:"#FFD93D", icon:"◉", statusLabel:"✓ Mastered", statusColor:"#6BCB77", tip:null,
+    topics:[
+      {name:"Agile & Scrum", desc:"Sprints, Ceremonies, Roles", done:true},
+      {name:"Kanban", desc:"WIP Limits, Flow Metrics", done:true},
+      {name:"BDD / TDD", desc:"Gherkin, Cucumber, Test-First", done:true},
+      {name:"Shift-Left Testing", desc:"Early Involvement & Prevention", done:true},
+      {name:"CI/CD Basics", desc:"Pipelines, Jenkins, GitHub Actions", done:true},
+    ]},
+  { phase:"04", title:"Test Automation", color:"#6BCB77", icon:"⬢", statusLabel:"✓ Mastered", statusColor:"#6BCB77",
+    tip:"Cognizant heavily uses Selenium + Java. Brush up on POM, TestNG, and CI integration. Playwright is a growing ask too.",
+    topics:[
+      {name:"Selenium WebDriver", desc:"Java/Python, Locators, Waits", done:true},
+      {name:"TestNG / JUnit / PyTest", desc:"Frameworks, Assertions, Reports", done:true},
+      {name:"Page Object Model", desc:"Design Patterns, Maintainability", done:true},
+      {name:"Data-Driven Testing", desc:"Excel, CSV, JSON Parameterization", done:true},
+      {name:"Playwright / Cypress", desc:"Modern E2E Frameworks", done:false},
+    ]},
+  { phase:"05", title:"API & Performance", color:"#C77DFF", icon:"◆", statusLabel:"→ Strengthen", statusColor:"#FFD93D",
+    tip:"API testing with Postman and REST Assured is commonly assessed in Cognizant QA interviews. JMeter basics are a bonus.",
+    topics:[
+      {name:"REST API Testing", desc:"Postman, REST Assured, Status Codes", done:true},
+      {name:"GraphQL Testing", desc:"Queries, Mutations, Validation", done:false},
+      {name:"Performance Testing", desc:"JMeter, k6, Load & Stress Testing", done:false},
+      {name:"Contract Testing", desc:"Pact, Consumer-Driven Contracts", done:false},
+      {name:"API Automation", desc:"CI Integration, Schema Validation", done:false},
+    ]},
+  { phase:"06", title:"Specialized Testing", color:"#FF9A3C", icon:"⬟", statusLabel:"⭐ Your Edge", statusColor:"#6BCB77",
+    tip:"Your A11y & I18n expertise is rare and highly valuable for Cognizant's global clients. Lead with this in interviews!",
+    topics:[
+      {name:"Accessibility (A11y)", desc:"WCAG, axe, Screen Readers", done:true},
+      {name:"Internationalization (I18n)", desc:"Locale, Date/Currency Formats", done:true},
+      {name:"Security Testing", desc:"OWASP, SQL Injection, XSS", done:false},
+      {name:"Mobile Testing", desc:"Appium, Android/iOS, Emulators", done:false},
+      {name:"Visual Testing", desc:"Percy, Applitools, Screenshot Diff", done:false},
+    ]},
+  { phase:"07", title:"Advanced & Leadership", color:"#F72585", icon:"★", statusLabel:"→ Level Up", statusColor:"#FFD93D",
+    tip:"With 6+ yrs experience, Cognizant expects quality strategy thinking. Prepare STAR stories around mentoring, test architecture & metrics.",
+    topics:[
+      {name:"Test Strategy & Architecture", desc:"Test Pyramid, Quadrants, ROI", done:false},
+      {name:"Metrics & Reporting", desc:"KPIs, Dashboards, Defect Density", done:true},
+      {name:"AI in Testing", desc:"Copilot, Testim, Self-Healing Scripts", done:false},
+      {name:"Team Mentoring", desc:"Code Reviews, QA Guild, Knowledge Share", done:false},
+      {name:"Quality Engineering", desc:"Shift-Right, Observability, Chaos Testing", done:false},
+    ]},
+];
+
+const container = document.getElementById('cards');
+let openIndex = null;
+
+function render() {
+  container.innerHTML = '';
+  data.forEach((p, i) => {
+    const isOpen = openIndex === i;
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.style.border = `1.5px solid ${isOpen ? p.color : '#1e1e32'}`;
+    card.style.background = isOpen ? '#141422' : '#0f0f1a';
+    if(isOpen) card.style.boxShadow = `0 0 30px ${p.color}25`;
+
+    // Pills HTML
+    const pillsHtml = p.topics.map(t => `
+      <span class="pill" style="background:${t.done ? p.color+'18' : '#0a0a14'};border:1px solid ${t.done ? p.color+'55' : '#1e1e30'};color:${t.done ? p.color : '#444'}">
+        ${t.done ? '✓ ' : ''}${t.name}
+      </span>`).join('');
+
+    // Topics HTML
+    const topicsHtml = p.topics.map(t => `
+      <div class="topic">
+        <div class="check" style="background:${t.done ? p.color+'30' : '#141422'};border:1.5px solid ${t.done ? p.color : '#2a2a40'};color:${t.done ? p.color : '#333'}">
+          ${t.done ? '✓' : '○'}
+        </div>
+        <div>
+          <div class="topic-name" style="color:${t.done ? '#ddd' : '#555'}">${t.name}</div>
+          <div class="topic-desc">${t.desc}</div>
+        </div>
+      </div>`).join('');
+
+    const tipHtml = p.tip ? `
+      <div class="tip-box">
+        <div class="tip-label">🎯 COGNIZANT TIP</div>
+        <div class="tip-text">${p.tip}</div>
+      </div>` : '';
+
+    card.innerHTML = `
+      <div class="card-header">
+        <div class="icon-box" style="background:${p.color}20;border:1.5px solid ${p.color}55">${p.icon}</div>
+        <div>
+          <div class="phase-label">PHASE ${p.phase}</div>
+          <div class="phase-title">${p.title}</div>
+        </div>
+        <div class="right">
+          <span class="status-badge" style="color:${p.statusColor};border:1px solid ${p.statusColor}55">${p.statusLabel}</span>
+          <span class="toggle" style="color:${p.color}">${isOpen ? '−' : '+'}</span>
+        </div>
+      </div>
+      ${!isOpen ? `<div class="pills">${pillsHtml}</div>` : ''}
+      <div class="body" style="display:${isOpen ? 'block' : 'none'}">
+        ${tipHtml}
+        <div class="topics" style="border-top:1px solid ${p.color}33">${topicsHtml}</div>
+      </div>`;
+
+    card.querySelector('.card-header').addEventListener('click', () => {
+      openIndex = openIndex === i ? null : i;
+      render();
+    });
+
+    container.appendChild(card);
+  });
+}
+
+render();
+</script>
+</body>
+</html>
