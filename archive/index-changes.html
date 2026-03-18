@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="theme-color" content="#0a0a0f"/>
+<link rel="manifest" href="manifest.json"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="QA Master"/>
+<title>QA Master – Anuradha</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+body { background: #0a0a0f; color: #fff; font-family: Georgia, serif; min-height: 100vh; padding-bottom: 90px; }
+.bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: #0f0f1a; border-top: 1px solid #1e1e32; display: flex; z-index: 100; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+.bottom-nav::-webkit-scrollbar { display: none; }
+.nav-btn { flex: 0 0 auto; min-width: 70px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 8px 6px 6px; cursor: pointer; user-select: none; font-family: monospace; font-size: 8px; color: #444; border: none; background: none; transition: color 0.2s; }
+.nav-btn .nav-icon { font-size: 17px; margin-bottom: 2px; }
+.nav-btn.active { color: #00D4FF; }
+.page { display: none; padding: 16px 14px; max-width: 640px; margin: 0 auto; }
+.page.active { display: block; }
+.page-header { text-align: center; margin-bottom: 20px; padding-top: 8px; }
+.page-sub { font-size: 9px; letter-spacing: 4px; color: #00D4FF; font-family: monospace; margin-bottom: 6px; }
+.page-title { font-size: clamp(22px, 6vw, 36px); font-style: italic; font-weight: 900; background: linear-gradient(135deg, #fff 0%, #00D4FF 50%, #C77DFF 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; line-height: 1.2; }
+.progress-wrap { background: #1e1e32; border-radius: 20px; height: 6px; margin: 6px 0; overflow: hidden; }
+.progress-fill { height: 100%; border-radius: 20px; transition: width 0.4s ease; }
+.card { border-radius: 10px; border: 1.5px solid #1e1e32; background: #0f0f1a; margin-bottom: 12px; overflow: hidden; transition: border 0.2s, box-shadow 0.2s; }
+.card-header { display: flex; align-items: center; gap: 12px; padding: 14px; cursor: pointer; user-select: none; }
+.icon-box { width: 42px; height: 42px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
+.card-meta { flex: 1; }
+.card-num { font-size: 9px; color: #444; letter-spacing: 3px; font-family: monospace; }
+.card-name { font-size: 15px; font-weight: bold; font-style: italic; color: #fff; }
+.card-right { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+.badge { font-size: 9px; padding: 2px 8px; border-radius: 20px; font-family: monospace; white-space: nowrap; }
+.toggle-btn { font-size: 22px; font-weight: 300; font-family: monospace; }
+.card-body { display: none; padding: 0 14px 14px; }
+.topic-card { border-radius: 8px; border: 1px solid #1e1e32; background: #0a0a14; margin-bottom: 8px; overflow: hidden; }
+.topic-header { display: flex; align-items: center; gap: 10px; padding: 11px 12px; cursor: pointer; user-select: none; }
+.check-circle { width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; flex-shrink: 0; font-family: monospace; }
+.topic-title { flex: 1; font-size: 13px; font-weight: bold; font-style: italic; }
+.topic-toggle { font-size: 18px; font-family: monospace; font-weight: 300; }
+.topic-body { display: none; padding: 0 12px 12px; }
+.section { margin-top: 12px; }
+.sec-label { font-size: 9px; letter-spacing: 3px; font-family: monospace; margin-bottom: 8px; padding: 3px 8px; border-radius: 4px; display: inline-block; }
+.body-text { font-size: 12px; color: #ccc; line-height: 1.8; font-family: monospace; }
+.qa-item { margin-bottom: 10px; }
+.qa-q { font-size: 12px; color: #FFD93D; font-family: monospace; margin-bottom: 4px; line-height: 1.5; }
+.qa-a { font-size: 12px; color: #999; font-family: monospace; line-height: 1.6; padding-left: 12px; border-left: 2px solid #333; }
+.tools-grid { display: flex; flex-wrap: wrap; gap: 6px; }
+.tool-tag { font-size: 11px; padding: 4px 10px; border-radius: 4px; font-family: monospace; }
+.info-box { border-radius: 8px; padding: 12px 14px; margin: 10px 0; font-size: 12px; font-family: monospace; line-height: 1.7; }
+.code-block { background: #0d0d1a; border: 1px solid #1e1e32; border-radius: 6px; padding: 12px; margin: 8px 0; font-family: monospace; font-size: 11px; color: #6BCB77; line-height: 1.8; overflow-x: auto; white-space: pre; }
+.prep-tabs { display: flex; gap: 8px; margin-bottom: 16px; overflow-x: auto; padding-bottom: 4px; }
+.prep-tab { font-size: 11px; font-family: monospace; padding: 6px 14px; border-radius: 20px; border: 1px solid #1e1e32; background: #0f0f1a; color: #666; cursor: pointer; white-space: nowrap; user-select: none; }
+.prep-tab.active { background: #00D4FF22; border-color: #00D4FF; color: #00D4FF; }
+.prep-section { display: none; }
+.prep-section.active { display: block; }
+.prep-card { background: #0f0f1a; border: 1px solid #1e1e32; border-radius: 8px; padding: 14px; margin-bottom: 10px; }
+.prep-tag { font-size: 9px; padding: 2px 7px; border-radius: 10px; font-family: monospace; margin-bottom: 8px; display: inline-block; }
+.tracker-overview { background: #0f0f1a; border: 1px solid #1e1e32; border-radius: 10px; padding: 16px; margin-bottom: 16px; }
+.overall-pct { font-size: 36px; font-weight: 900; font-style: italic; background: linear-gradient(135deg, #00D4FF, #C77DFF); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.tracker-phase { border-radius: 10px; background: #0f0f1a; margin-bottom: 10px; overflow: hidden; }
+.tracker-phase-header { display: flex; align-items: center; gap: 12px; padding: 14px; cursor: pointer; user-select: none; }
+.tracker-topic-row { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid #1a1a2a; }
+.tracker-topic-row:last-child { border-bottom: none; }
+.tracker-topic-name { flex: 1; font-size: 12px; font-style: italic; color: #ccc; }
+.status-select { background: #141422; border: 1px solid #2a2a40; color: #ccc; font-size: 10px; font-family: monospace; padding: 4px 4px; border-radius: 6px; cursor: pointer; outline: none; max-width: 105px; }
+.cog-card { background: #1a0a1f; border: 1px solid #F7258566; border-radius: 10px; padding: 16px; margin-bottom: 12px; }
+.cog-label { font-size: 9px; color: #F72585; letter-spacing: 3px; font-family: monospace; margin-bottom: 8px; }
+.cog-text { font-size: 12px; color: #ccc; line-height: 1.8; font-family: monospace; }
+.star-card { background: #0f0f1a; border: 1px solid #FFD93D44; border-radius: 10px; padding: 14px; margin-bottom: 10px; }
+.star-label { font-size: 9px; color: #FFD93D; letter-spacing: 3px; font-family: monospace; margin-bottom: 6px; }
+.star-text { font-size: 12px; color: #aaa; line-height: 1.8; font-family: monospace; }
+.market-card { background: #0f0f1a; border: 1px solid #1e1e32; border-radius: 10px; padding: 16px; margin-bottom: 12px; }
+.demand-badge { font-size: 9px; padding: 2px 8px; border-radius: 10px; font-family: monospace; display: inline-block; margin-bottom: 8px; }
+</style>
+</head>
+<body>
+
+<nav class="bottom-nav">
+  <button class="nav-btn active" onclick="showPage('roadmap',this)"><span class="nav-icon">🗺️</span>ROADMAP</button>
+  <button class="nav-btn" onclick="showPage('playwright',this)"><span class="nav-icon">🎭</span>PLAYWRIGHT</button>
+  <button class="nav-btn" onclick="showPage('tracker',this)"><span class="nav-icon">✅</span>TRACKER</button>
+  <button class="nav-btn" onclick="showPage('prep',this)"><span class="nav-icon">🎯</span>PREP</button>
+  <button class="nav-btn" onclick="showPage('market',this)"><span class="nav-icon">📈</span>MARKET</button>
+  <button class="nav-btn" onclick="showPage('cognizant',this)"><span class="nav-icon">🏷️</span>COGNIZANT</button>
+  <button class="nav-btn" onclick="showPage('github',this)"><span class="nav-icon">🐙</span>GITHUB</button>
+</nav>
+
+<!-- ROADMAP PAGE -->
+<div id="page-roadmap" class="page active">
+  <div class="page-header">
+    <div class="page-sub">◈ ANURADHA'S BLUEPRINT ◈</div>
+    <div class="page-title">Software Testing<br>Roadmap</div>
+    <p style="font-size:10px;color:#555;font-family:monospace;margin-top:8px">TAP PHASE → TAP TOPIC</p>
+  </div>
+  <div id="roadmap-container"></div>
+</div>
+
+<!-- PLAYWRIGHT PAGE -->
+<div id="page-playwright" class="page">
+  <div class="page-header">
+    <div class="page-sub">◈ HONEST LEARNING PATH ◈</div>
+    <div class="page-title">🎭 Playwright<br>From Zero</div>
+  </div>
+  <div class="info-box" style="background:#1a0a0a;border:1px solid #FF6B6B66;color:#FF6B6B">
+    ⚠️ HONEST WARNING: Playwright needs JavaScript/TypeScript. Skipping the basics below will lead to frustration. Follow the stages in order — do not rush.
+  </div>
+  <div id="playwright-container"></div>
+</div>
+
+<!-- TRACKER PAGE -->
+<div id="page-tracker" class="page">
+  <div class="page-header">
+    <div class="page-sub">◈ YOUR PROGRESS ◈</div>
+    <div class="page-title">Progress Tracker</div>
+  </div>
+  <div class="tracker-overview">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+      <div>
+        <div style="font-size:10px;color:#555;font-family:monospace;letter-spacing:2px">OVERALL COMPLETION</div>
+        <div class="overall-pct" id="overall-pct">0%</div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-size:10px;color:#555;font-family:monospace" id="overall-counts">0 / 0 topics</div>
+        <button onclick="resetProgress()" style="margin-top:8px;background:#1e1e32;border:1px solid #333;color:#666;font-size:10px;font-family:monospace;padding:4px 10px;border-radius:6px;cursor:pointer">RESET ALL</button>
+      </div>
+    </div>
+    <div class="progress-wrap"><div class="progress-fill" id="overall-bar" style="background:linear-gradient(90deg,#00D4FF,#C77DFF);width:0%"></div></div>
+  </div>
+  <div id="tracker-container"></div>
+</div>
+
+<!-- PREP PAGE -->
+<div id="page-prep" class="page">
+  <div class="page-header">
+    <div class="page-sub">◈ INTERVIEW READY ◈</div>
+    <div class="page-title">Interview Prep</div>
+  </div>
+  <div class="prep-tabs">
+    <div class="prep-tab active" onclick="showPrepTab('istqb',this)">ISTQB</div>
+    <div class="prep-tab" onclick="showPrepTab('playwright',this)">Playwright</div>
+    <div class="prep-tab" onclick="showPrepTab('selenium',this)">Selenium</div>
+    <div class="prep-tab" onclick="showPrepTab('api',this)">API</div>
+    <div class="prep-tab" onclick="showPrepTab('cicd',this)">CI/CD</div>
+    <div class="prep-tab" onclick="showPrepTab('manual',this)">Manual</div>
+  </div>
+  <div id="prep-container"></div>
+</div>
+
+<!-- MARKET PAGE -->
+<div id="page-market" class="page">
+  <div class="page-header">
+    <div class="page-sub">◈ 2025-26 TRENDS ◈</div>
+    <div class="page-title">Market Demand<br>Skills</div>
+  </div>
+  <div id="market-container"></div>
+</div>
+
+<!-- COGNIZANT PAGE -->
+<div id="page-cognizant" class="page">
+  <div class="page-header">
+    <div class="page-sub">◈ YOUR TARGET ◈</div>
+    <div class="page-title">Cognizant Prep</div>
+  </div>
+  <div id="cognizant-container"></div>
+</div>
+
+<!-- GITHUB PAGE -->
+<div id="page-github" class="page">
+  <div class="page-header">
+    <div class="page-sub">◈ MY PORTFOLIO ◈</div>
+    <div class="page-title">GitHub Portfolio</div>
+  </div>
+
+  <!-- Profile -->
+  <div style="background:#0f0f1a;border:1px solid #1e1e32;border-radius:10px;padding:16px;margin-bottom:14px;display:flex;align-items:center;gap:14px">
+    <div style="font-size:40px">🐙</div>
+    <div>
+      <div style="font-size:9px;color:#444;font-family:monospace;letter-spacing:3px">GITHUB PROFILE</div>
+      <div style="font-size:16px;font-weight:bold;font-style:italic;color:#fff">Anuradha-ops</div>
+      <a href="https://github.com/Anuradha-ops" target="_blank" style="font-size:11px;color:#00D4FF;font-family:monospace;text-decoration:none">github.com/Anuradha-ops →</a>
+    </div>
+  </div>
+
+  <!-- Playwright Repo -->
+  <div style="background:#0f0f1a;border:1.5px solid #6BCB7766;border-radius:10px;padding:16px;margin-bottom:14px">
+    <div style="font-size:9px;color:#6BCB77;letter-spacing:3px;font-family:monospace;margin-bottom:8px">🎭 PLAYWRIGHT PROJECT</div>
+    <div style="font-size:15px;font-weight:bold;font-style:italic;color:#fff;margin-bottom:4px">playwright-tests</div>
+    <div style="font-size:11px;color:#888;font-family:monospace;line-height:1.8;margin-bottom:10px">Automated test scripts using Playwright + JavaScript<br>✅ Login test — 3 browsers passing<br>✅ Chromium | Firefox | WebKit</div>
+    <a href="https://github.com/Anuradha-ops/playwright-tests" target="_blank" style="display:inline-block;padding:6px 16px;background:#6BCB7722;border:1px solid #6BCB7766;color:#6BCB77;font-size:11px;font-family:monospace;border-radius:6px;text-decoration:none">View Repository →</a>
+  </div>
+
+  <!-- QA Master App Repo -->
+  <div style="background:#0f0f1a;border:1.5px solid #00D4FF66;border-radius:10px;padding:16px;margin-bottom:14px">
+    <div style="font-size:9px;color:#00D4FF;letter-spacing:3px;font-family:monospace;margin-bottom:8px">🗺️ QA MASTER APP</div>
+    <div style="font-size:15px;font-weight:bold;font-style:italic;color:#fff;margin-bottom:4px">qa-master-app</div>
+    <div style="font-size:11px;color:#888;font-family:monospace;line-height:1.8;margin-bottom:10px">PWA — Software Testing Roadmap & Interview Prep<br>✅ Live on GitHub Pages<br>✅ 7 tabs | Progress Tracker | Cognizant Prep</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <a href="https://github.com/Anuradha-ops/qa-master-app" target="_blank" style="display:inline-block;padding:6px 16px;background:#00D4FF22;border:1px solid #00D4FF66;color:#00D4FF;font-size:11px;font-family:monospace;border-radius:6px;text-decoration:none">View Repository →</a>
+      <a href="https://anuradha-ops.github.io/qa-master-app" target="_blank" style="display:inline-block;padding:6px 16px;background:#00D4FF22;border:1px solid #00D4FF66;color:#00D4FF;font-size:11px;font-family:monospace;border-radius:6px;text-decoration:none">Live App →</a>
+    </div>
+  </div>
+
+  <!-- Coming next -->
+  <div style="background:#0f0f1a;border:1px solid #1e1e32;border-radius:10px;padding:16px;margin-bottom:14px">
+    <div style="font-size:9px;color:#FFD93D;letter-spacing:3px;font-family:monospace;margin-bottom:10px">🚀 COMING NEXT</div>
+    <div style="font-size:12px;color:#555;font-family:monospace;line-height:2">
+      ⬜ Login test with POM structure<br>
+      ⬜ Invalid login test<br>
+      ⬜ API tests with Playwright<br>
+      ⬜ GitHub Actions CI/CD pipeline
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// DATA — ROADMAP
+// ============================================================
+const phases = [
+  { phase:"01", title:"Foundations", color:"#00D4FF", icon:"⬡", statusLabel:"✓ Mastered", statusColor:"#6BCB77", tip:null,
+    topics:[
+      { name:"SDLC & STLC", done:true, concept:"SDLC defines phases: Requirements → Design → Development → Testing → Deployment → Maintenance. STLC mirrors this with testing-specific phases: Requirement Analysis → Test Planning → Test Design → Environment Setup → Test Execution → Test Closure. Key point: STLC runs in PARALLEL with SDLC — testing starts at requirements phase, not after development. This is called Shift-Left.", qa:[{q:"Difference between SDLC and STLC?",a:"SDLC covers the entire software development process. STLC is a subset focused only on testing activities. STLC runs in parallel with SDLC — testing starts at the requirements phase, not after development completes."},{q:"When should testing start in SDLC?",a:"As early as possible — at requirements phase. Shift-left testing reduces the cost of fixing defects by up to 10x compared to finding them in production."},{q:"What are entry and exit criteria in STLC?",a:"Entry criteria = conditions to START a phase (e.g., test plan approved before execution begins). Exit criteria = conditions to END a phase (e.g., 95% test cases executed, no open critical defects)."}], tools:["JIRA","Confluence","TestRail","Zephyr","MS Word"] },
+      { name:"Testing Principles", done:true, concept:"The 7 ISTQB Principles every tester must know:\n1. Testing shows PRESENCE of defects, not absence.\n2. Exhaustive testing is impossible — use risk-based approach.\n3. Early testing saves cost — find bugs early.\n4. Defect clustering — 80% of bugs in 20% of modules (Pareto rule).\n5. Pesticide paradox — same tests stop finding bugs; keep updating them.\n6. Testing is context-dependent — banking app tested differently than a game.\n7. Absence-of-errors fallacy — a bug-free system can still fail user needs.", qa:[{q:"Explain the Pesticide Paradox with an example.",a:"If you run the same login regression test every sprint without updating it, it eventually stops catching new bugs. Fix: regularly add new test cases for new features and edge cases."},{q:"What is the Pareto principle in testing?",a:"80% of defects are found in 20% of the modules. This means focus more testing effort on historically defect-prone areas of the application."}], tools:["ISTQB Foundation Guide","XMind for mindmaps","Test coverage analysis tools"] },
+      { name:"Types of Testing", done:true, concept:"Functional Testing: Does the system do what it should?\n→ Unit, Integration, System, UAT\n\nNon-Functional Testing: How well does it perform?\n→ Performance, Security, Usability, Compatibility\n\nBlack Box: Tester has NO code knowledge — tests inputs and outputs only.\nWhite Box: Tester has FULL code knowledge — tests internal paths.\nGrey Box: Partial code knowledge — mix of both.\n\nRegression: Re-test after any code change.\nSmoke: Quick check — is the build stable enough to test?\nSanity: Narrow check — did this specific fix work?", qa:[{q:"Difference between Smoke and Sanity testing?",a:"Smoke = broad and shallow. Run on a new build to confirm it is stable enough for further testing. Sanity = narrow and deep. Run to verify a specific bug fix or feature works correctly. Smoke comes first."},{q:"When is Black Box testing used?",a:"When testers have no access to source code — which is most real-world QA work. You test based on requirements, UI behaviour, and expected outputs without knowing how code works internally."}], tools:["Selenium","Postman","JMeter","OWASP ZAP","BrowserStack"] },
+      { name:"Test Levels", done:true, concept:"Unit Testing: Developer tests a single function/method in isolation.\nIntegration Testing: Tests how modules interact with each other.\n→ Top-Down: Test from top module downward (uses stubs)\n→ Bottom-Up: Test from bottom module upward (uses drivers)\nSystem Testing: Full end-to-end test of the complete application.\nUAT (Acceptance Testing): Business users validate the system before go-live.\n\nEach level catches different defects:\nUnit → logic errors\nIntegration → interface/data mismatches\nSystem → workflow and business rule bugs\nUAT → business requirement violations", qa:[{q:"Difference between System Testing and UAT?",a:"System testing is done by QA against technical specs. UAT is done by business users/clients against business requirements. UAT is the final approval before production release."},{q:"What are stubs and drivers?",a:"Stubs = dummy replacements for modules that are CALLED but not yet built. Drivers = dummy replacements for modules that DO THE CALLING but not yet built. Used in integration testing when not all modules are ready."}], tools:["JUnit","TestNG","Selenium","Cucumber","JIRA"] },
+      { name:"Bug Life Cycle", done:true, concept:"Full bug journey:\nNew → Assigned → Open (being investigated) → Fixed → Retest → Verified → Closed\n\nOther states: Rejected (not a bug), Deferred (fix later), Duplicate, Not Reproducible, Reopened.\n\nSeverity vs Priority:\nSeverity = technical impact on system (Critical/Major/Minor/Low)\nPriority = business urgency to fix (High/Medium/Low)\n\nExample: Spelling mistake on homepage = Low severity, High priority (users see it first).\nExample: Crash in rarely used admin report = High severity, Low priority.", qa:[{q:"Difference between Severity and Priority? Give an example.",a:"Severity is technical impact. Priority is business urgency. A typo on the login page = low severity but high priority (first thing every user sees). A data calculation error in a rarely used screen = high severity but low priority."},{q:"What do you do if a developer says 'not a bug'?",a:"Provide clear reproduction steps, screenshots or logs, and reference the specific requirement that is being violated. If disagreement continues, escalate to the BA or Product Owner for a business decision on expected behaviour."}], tools:["JIRA","Bugzilla","Azure DevOps","Loom (video)","Snagit (screenshots)"] },
+    ]
+  },
+  { phase:"02", title:"Manual Testing", color:"#FF6B6B", icon:"◈", statusLabel:"✓ Mastered", statusColor:"#6BCB77", tip:null,
+    topics:[
+      { name:"Test Planning", done:true, concept:"A Test Plan is a formal document that describes: WHAT will be tested, HOW it will be tested, WHO will test it, WHEN testing happens, and what RISKS exist.\n\nKey sections:\n• Objectives — what are we trying to achieve?\n• Scope — what is IN scope and OUT of scope?\n• Test strategy — approach and levels\n• Entry/Exit criteria\n• Resource plan and schedule\n• Risk register and mitigation\n• Deliverables\n\nIEEE 829 is the international standard for test documentation.", qa:[{q:"What is included in a Test Plan?",a:"Objectives, scope (in/out), test strategy, test levels, entry/exit criteria, resource plan, schedule, deliverables, risk register, and sign-off. Based on IEEE 829 standard."},{q:"How do you handle scope creep in testing?",a:"Raise it formally with PM/BA, assess impact on schedule and resources, update the test plan, and get sign-off before expanding scope. Never silently absorb new work without agreement."}], tools:["Confluence","TestRail","MS Word","JIRA","Zephyr"] },
+      { name:"Test Design Techniques", done:true, concept:"BVA (Boundary Value Analysis):\nTest at boundaries. For input range 1-100: test 0, 1, 2, 99, 100, 101.\nWhy? Most bugs hide at boundaries.\n\nEquivalence Partitioning:\nDivide inputs into valid and invalid groups. Test one from each group.\nExample: Age field 18-60. Valid group: any age 18-60. Invalid group: below 18 or above 60.\n\nDecision Table:\nFor complex business rules with multiple conditions. Maps all combinations.\nExample: Loan approval rules.\n\nState Transition:\nFor systems that change states.\nExample: Login → Locked after 3 failures → Unlocked after reset.", qa:[{q:"Explain BVA with an example.",a:"For a field accepting age 18-60: test 17 (invalid), 18 (valid minimum), 19 (just above minimum), 59 (just below maximum), 60 (valid maximum), 61 (invalid). Boundaries are where bugs commonly hide."},{q:"When would you use a Decision Table?",a:"When business rules have multiple conditions with different outcome combinations. Example: loan approval depends on credit score AND income AND employment status. Decision tables ensure every combination is covered."}], tools:["Excel/Google Sheets","XMind","TestRail","PICT (pairwise tool)"] },
+      { name:"Test Case Writing", done:true, concept:"A good test case must have:\n• Test Case ID — unique identifier\n• Title — clear one-line description\n• Preconditions — what must be true before running\n• Test Steps — numbered, unambiguous steps\n• Expected Result — specific, measurable outcome\n• Actual Result — filled during execution\n• Status — Pass/Fail/Blocked/Skipped\n• Priority — High/Medium/Low\n• Requirement reference — for traceability\n\nRTM (Requirements Traceability Matrix): Maps every requirement to its test cases. Proves coverage. Used in audits.", qa:[{q:"What makes a good test case?",a:"Clear title, unambiguous numbered steps, specific expected result, one scenario per test case, reusable preconditions, and traced to a requirement. Must be executable by anyone without guessing intent."},{q:"What is RTM and why is it important?",a:"Requirements Traceability Matrix maps each requirement to its test cases. Ensures full requirement coverage, helps identify untested areas, and provides formal evidence of coverage during audits."}], tools:["TestRail","Zephyr","Excel","JIRA","Confluence"] },
+      { name:"Defect Management", done:true, concept:"A good bug report contains:\n1. Clear summary — what is broken?\n2. Environment — OS, browser, version, device\n3. Preconditions — state of app before reproducing\n4. Steps to reproduce — numbered, minimal\n5. Expected result — what SHOULD happen\n6. Actual result — what DOES happen\n7. Severity and Priority\n8. Attachments — screenshot, video, logs\n\nGolden rules:\n→ One bug per report\n→ Always reproduce before logging\n→ Provide MINIMAL reproduction steps\n→ Never assign blame in bug descriptions", qa:[{q:"What should a good bug report contain?",a:"Title, environment details, preconditions, numbered reproduction steps, expected result, actual result, severity, priority, and attachments like screenshots or logs. Must be reproducible by anyone reading it."},{q:"What is DRE (Defect Removal Efficiency)?",a:"DRE = (Defects found before release / Total defects including production) × 100. A DRE of 95% means 95% of defects were caught before release. It measures how effective testing is at preventing production bugs."}], tools:["JIRA","Bugzilla","Azure DevOps","Loom","Snagit"] },
+      { name:"Test Execution & Reporting", done:true, concept:"During test execution:\n→ Run test cases in priority order\n→ Log Pass/Fail/Blocked/Skipped status\n→ Raise defects for every failure immediately\n→ Track blocked tests and their reasons\n\nTest Summary Report contains:\n→ Scope of testing\n→ Execution summary: planned vs executed vs passed vs failed\n→ Defect summary by severity\n→ Outstanding risks\n→ Environment details\n→ Go / No-Go recommendation\n→ Sign-off section", qa:[{q:"What do you include in a Test Summary Report?",a:"Scope tested, execution summary (planned/executed/passed/failed), defect summary by severity, outstanding risks, environment details, and a formal go/no-go recommendation with stakeholder sign-off."},{q:"What does Blocked status mean for a test case?",a:"The test cannot be executed due to an external dependency — e.g., a prerequisite feature is broken, the environment is down, or test data is unavailable. Must be tracked and re-evaluated once blocker is resolved."}], tools:["TestRail","JIRA","Excel","Confluence","Zephyr for JIRA"] },
+    ]
+  },
+  { phase:"03", title:"Agile & Methodologies", color:"#FFD93D", icon:"◉", statusLabel:"✓ Mastered", statusColor:"#6BCB77", tip:null,
+    topics:[
+      { name:"Agile & Scrum", done:true, concept:"Agile = iterative delivery in short sprints (1-4 weeks).\n\nScrum Roles:\n→ Product Owner: owns the backlog, defines priorities\n→ Scrum Master: removes blockers, facilitates ceremonies\n→ Dev Team: builds and tests\n\nCeremonies:\n→ Sprint Planning: what do we build this sprint?\n→ Daily Standup: what did I do, what will I do, any blockers?\n→ Sprint Review: demo to stakeholders\n→ Retrospective: what went well, what to improve?\n\nQA in Scrum: participates from day 1, reviews stories for testability, tests within the same sprint, contributes to DoD.", qa:[{q:"What is the role of QA in a Scrum team?",a:"QA collaborates from sprint planning — reviewing stories for testability, writing acceptance criteria, creating test cases during development, executing tests within the sprint, and contributing quality insights to retrospectives."},{q:"What is Definition of Done (DoD)?",a:"A shared checklist agreed by the whole team defining when a story is truly complete. Typically: code reviewed, unit tests written, QA tested, acceptance criteria passed, regression run, documentation updated."}], tools:["JIRA","Confluence","Azure DevOps","Miro","Slack"] },
+      { name:"BDD / TDD", done:true, concept:"TDD (Test-Driven Development):\nWrite a FAILING test → Write code to make it PASS → REFACTOR.\nTests drive the design. Developer practice.\n\nBDD (Behaviour-Driven Development):\nExtends TDD with plain English Gherkin syntax.\n→ Given: the starting context\n→ When: the action taken\n→ Then: the expected outcome\n\nBDD bridges the gap between business, dev, and QA.\nCucumber is the most popular BDD framework.\n\nExample:\nGiven the user is on the login page\nWhen the user enters valid credentials\nThen the user is redirected to the dashboard", qa:[{q:"Difference between TDD and BDD?",a:"TDD is developer-focused — unit tests written before code. BDD is collaboration-focused — scenarios written in plain English (Gherkin) before development, involving business stakeholders. BDD scenarios double as documentation and automated acceptance tests."},{q:"Write a Gherkin scenario for a login feature.",a:"Feature: User Login\nScenario: Successful login with valid credentials\nGiven the user is on the login page\nWhen the user enters valid username 'admin' and password 'pass123'\nAnd clicks the Login button\nThen the user should be redirected to the dashboard\nAnd a welcome message should be displayed."}], tools:["Cucumber","SpecFlow","JBehave","Gherkin syntax","IntelliJ/VS Code"] },
+      { name:"CI/CD Basics", done:true, concept:"CI (Continuous Integration):\nDevelopers merge code frequently. Every merge triggers an automated build and test run. Catches integration issues early.\n\nCD (Continuous Delivery):\nCode is always in a deployable state. Passes automated tests. Needs manual approval for production.\n\nContinuous Deployment:\nEvery passing commit auto-deploys to production. No manual gate.\n\nQA in CI/CD:\n→ Automated test suite runs in the pipeline\n→ Tests are quality gates — failed tests block deployment\n→ Flaky tests must be fixed immediately\n→ Test results visible in pipeline dashboard", qa:[{q:"What is the role of QA in a CI/CD pipeline?",a:"QA owns the automated test suite that acts as a quality gate. If critical tests fail, the deployment is blocked. QA monitors test health, fixes flaky tests, and ensures new features have automated test coverage before they are merged."},{q:"What is a flaky test and how do you handle it?",a:"A flaky test passes and fails inconsistently without code changes. Common causes: timing issues, test data dependencies, environment instability. Fix: add proper explicit waits, isolate test data, make tests fully independent of each other."}], tools:["Jenkins","GitHub Actions","GitLab CI","CircleCI","Docker"] },
+    ]
+  },
+  { phase:"04", title:"Test Automation", color:"#6BCB77", icon:"⬢", statusLabel:"✓ Mastered", statusColor:"#6BCB77",
+    tip:"Cognizant heavily uses Selenium + Java. Brush up on POM, TestNG, and CI integration.",
+    topics:[
+      { name:"Selenium WebDriver", done:true, concept:"Selenium WebDriver = industry standard browser automation tool.\n\nLocator priority (use in this order):\n1. ID — fastest and most stable\n2. Name\n3. CSS Selector — fast and flexible\n4. XPath — use only when above don't work\n\nWaits:\n→ Implicit Wait: global timeout for ALL element lookups\n→ Explicit Wait: wait for a SPECIFIC condition on a SPECIFIC element\n→ NEVER use Thread.sleep() — it is unreliable and slows tests\n\nKey concepts: WebDriver interface, browser drivers (ChromeDriver, GeckoDriver), handling alerts/frames/windows, taking screenshots.", qa:[{q:"Difference between implicit and explicit wait?",a:"Implicit wait sets a global timeout for every findElement call. Explicit wait waits for a specific condition (e.g., element visible, clickable) on a specific element. Explicit is preferred — it is precise and does not slow down all element lookups globally."},{q:"How do you handle dynamic XPath?",a:"Use relative XPath with contains(), starts-with(), or text() functions. Example: //button[contains(text(),'Submit')] is stable even if other attributes change. CSS selectors are generally faster and more readable than XPath."}], tools:["Selenium WebDriver","ChromeDriver","GeckoDriver","Java/Python","IntelliJ/Eclipse"] },
+      { name:"Page Object Model", done:true, concept:"POM is a design pattern that separates page structure from test logic.\n\nWithout POM:\nEvery test directly finds elements → if one locator changes, update 50 tests.\n\nWith POM:\nEach page = one class with locators and actions.\nTests call page methods only.\nIf locator changes → update in ONE place only.\n\nStructure:\n→ LoginPage.java — has username, password, loginButton elements and login() method\n→ LoginTest.java — calls loginPage.login('user','pass')\n\nPage Factory: Selenium's implementation using @FindBy annotations.", qa:[{q:"Why is POM important in automation?",a:"Without POM, if a locator changes you update it in every test. With POM, update once in the page class. It makes tests readable, maintainable, and separates concerns between page structure and test logic."},{q:"Difference between POM and Page Factory?",a:"POM is the design pattern concept. Page Factory is Selenium's implementation of POM using @FindBy annotations and lazy element initialisation via PageFactory.initElements(). Page Factory reduces boilerplate code."}], tools:["Selenium","Java","Page Factory","IntelliJ IDEA","TestNG"] },
+      { name:"TestNG Framework", done:true, concept:"TestNG is the most popular Java test framework for Selenium automation.\n\nKey annotations in order:\n@BeforeSuite → @BeforeTest → @BeforeClass → @BeforeMethod → @Test → @AfterMethod → @AfterClass → @AfterTest → @AfterSuite\n\nFeatures:\n→ @DataProvider: parameterise tests with multiple data sets\n→ groups: run only specific groups (smoke, regression)\n→ parallel execution: run tests simultaneously\n→ dependency: @Test(dependsOnMethods)\n→ Rich HTML reports built-in", qa:[{q:"How do you achieve data-driven testing in TestNG?",a:"Use @DataProvider annotation — define a method returning Object[][] with test data sets. Reference it in @Test(dataProvider='name'). You can also read from Excel via Apache POI and return through DataProvider."},{q:"How do you run tests in parallel in TestNG?",a:"In testng.xml, set parallel='methods' and thread-count='4'. Ensure tests are fully independent — no shared state between threads. Use ThreadLocal<WebDriver> so each thread has its own browser instance."}], tools:["TestNG","Maven","Gradle","ExtentReports","Allure Reports"] },
+      { name:"Data-Driven Testing", done:true, concept:"Data-driven testing = run the SAME test with MULTIPLE data sets.\n\nWhy?\n→ One test logic, many data scenarios\n→ Non-technical team can update test data in Excel\n→ Easy to add edge cases without new code\n\nData sources:\n→ Excel files via Apache POI library\n→ CSV files via OpenCSV\n→ JSON files via Jackson\n→ Database queries\n→ TestNG @DataProvider\n\nGolden rule: Each data row must be fully INDEPENDENT — no test should depend on the result of a previous data row.", qa:[{q:"How do you read data from Excel in Selenium?",a:"Use Apache POI: create FileInputStream for .xlsx file, create Workbook object, get Sheet, iterate rows and cells. Return data as Object[][] from @DataProvider method so TestNG passes each row as a test execution."},{q:"Advantages of data-driven testing?",a:"Maximises test coverage without writing new code, separates data from logic so non-QA team can update test data, easy to add edge cases, and supports regression testing with realistic production-like data sets."}], tools:["Apache POI (Excel)","OpenCSV","Jackson (JSON)","TestNG DataProvider","MySQL"] },
+    ]
+  },
+  { phase:"05", title:"API & Performance", color:"#C77DFF", icon:"◆", statusLabel:"→ Strengthen", statusColor:"#FFD93D",
+    tip:"API testing with Postman is commonly assessed in Cognizant QA interviews. Know status codes and chaining well.",
+    topics:[
+      { name:"REST API Testing", done:true, concept:"REST API = interface that allows systems to communicate over HTTP.\n\nHTTP Methods:\nGET — retrieve data (no body)\nPOST — create new data (with body)\nPUT — replace entire resource\nPATCH — update part of a resource\nDELETE — remove a resource\n\nStatus Codes you MUST know:\n200 OK, 201 Created, 204 No Content\n400 Bad Request, 401 Unauthorized, 403 Forbidden\n404 Not Found, 409 Conflict\n500 Internal Server Error, 503 Service Unavailable\n\nWhat to test: happy path, invalid inputs, auth enforcement, schema validation, response time.", qa:[{q:"What do you verify when testing a REST API?",a:"Status code correctness, response body schema and data accuracy, response headers, authentication and authorisation enforcement, error handling for invalid inputs, response time under acceptable threshold, and idempotency for GET/PUT/DELETE calls."},{q:"Difference between PUT and PATCH?",a:"PUT replaces the entire resource — you must send all fields including unchanged ones. PATCH partially updates — you send only the fields you want to change. Testing difference: PUT tested with missing fields should return error; PATCH tested with various partial field combinations."}], tools:["Postman","REST Assured","Swagger/OpenAPI","Newman CLI","Insomnia"] },
+      { name:"Postman Deep Dive", done:false, concept:"Postman is the most-used API testing tool in the industry.\n\nKey features to master:\n→ Collections: group related API requests\n→ Environments: manage different base URLs (dev/staging/prod)\n→ Variables: store and reuse values ({{baseUrl}}, {{token}})\n→ Pre-request scripts: run JS before the request\n→ Tests tab: write assertions in JavaScript\n→ Chaining: pass response data from one request to next\n\nBasic assertion examples:\npm.test('Status is 200', () => pm.response.to.have.status(200));\npm.test('Body has name', () => pm.expect(pm.response.json().name).to.not.be.empty);\npm.test('Response fast', () => pm.expect(pm.response.responseTime).to.be.below(2000));", qa:[{q:"How do you chain requests in Postman?",a:"In the first request Tests tab: pm.environment.set('userId', pm.response.json().id). In the second request URL or body, use {{userId}} as a variable. This passes data from one response to the next request — essential for testing create → read → update → delete flows."},{q:"How do you run a Postman collection in CI?",a:"Use Newman — Postman's command line runner. Command: newman run collection.json -e environment.json --reporters cli,junit. Newman outputs JUnit XML reports that Jenkins or GitHub Actions can parse and display as test results in the pipeline."}], tools:["Postman","Newman CLI","GitHub Actions","Jenkins","Swagger"] },
+      { name:"Performance Testing Basics", done:false, concept:"Performance testing verifies the system behaves acceptably under load.\n\nTypes:\nLoad Testing: Expected user volume — does it meet SLAs?\nStress Testing: Beyond limits — where does it break?\nSpike Testing: Sudden large increase in users.\nSoak Testing: Sustained load over hours — memory leaks?\n\nKey metrics:\n→ Response time (average, 90th percentile, 95th percentile)\n→ Throughput: requests per second\n→ Error rate: percentage of failed requests\n→ Concurrent users\n→ CPU and Memory utilisation\n\nTarget SLAs typically: response time under 2 seconds, error rate below 1%.", qa:[{q:"Difference between Load and Stress testing?",a:"Load testing verifies the system meets performance SLAs under expected user volume (e.g., 1000 concurrent users). Stress testing goes beyond expected limits to find the breaking point and observe how the system fails. Both are needed."},{q:"Why is 95th percentile more important than average response time?",a:"The average hides the worst user experiences. The 95th percentile shows the response time experienced by the slowest 5% of users. If P95 is 8 seconds, 5% of your users wait 8 seconds — that is a real problem the average would not reveal."}], tools:["JMeter","k6","Gatling","BlazeMeter","Grafana"] },
+    ]
+  },
+  { phase:"06", title:"Specialized Testing", color:"#FF9A3C", icon:"⬟", statusLabel:"⭐ Your Edge", statusColor:"#6BCB77",
+    tip:"Your A11y and I18n expertise is rare. Lead with this in every interview — it sets you apart from 90% of candidates.",
+    topics:[
+      { name:"Accessibility (A11y)", done:true, concept:"WCAG (Web Content Accessibility Guidelines) — international standard.\n\n4 Principles (POUR):\nPerceivable — content visible to all users\nOperable — all functions work via keyboard\nUnderstandable — clear language and behaviour\nRobust — works with assistive technologies\n\nCompliance Levels:\nA = minimum, AA = standard target (legally required in US/EU), AAA = enhanced\n\nCommon defects:\n→ Missing alt text on images\n→ Colour contrast below 4.5:1 ratio\n→ Keyboard navigation broken\n→ Missing ARIA labels on form fields\n→ No skip navigation link\n\nTools: axe DevTools (browser extension), NVDA screen reader (Windows), VoiceOver (Mac/iOS)", qa:[{q:"What is WCAG and what level do organisations target?",a:"WCAG is the international web accessibility standard with 3 levels: A, AA, AAA. Most organisations target Level AA — it is legally required in many countries (ADA in US, EN 301 549 in Europe) and provides strong accessibility for disabled users."},{q:"How do you test for keyboard accessibility?",a:"Tab through the entire page using ONLY keyboard — no mouse. Check: every interactive element is reachable, logical tab order, visible focus indicator on every element, no keyboard traps, all actions completable without mouse, Escape closes modals."}], tools:["axe DevTools","WAVE","Lighthouse","NVDA","VoiceOver","Colour Contrast Analyser"] },
+      { name:"Internationalization (I18n)", done:true, concept:"I18n = making software adaptable to different languages and regions WITHOUT code changes.\nL10n = adapting content for a SPECIFIC locale (translating text, adjusting formats).\n\nWhat to test:\n→ Date formats: MM/DD/YYYY (US) vs DD/MM/YYYY (UK/India) vs YYYY-MM-DD (ISO)\n→ Number formats: 1,000.50 (US) vs 1.000,50 (Europe)\n→ Currency: symbol placement and formatting\n→ RTL languages: Arabic, Hebrew — entire layout should mirror\n→ String expansion: German/French text is 20-30% longer than English — UI must not break\n→ Character encoding: UTF-8 supports all languages\n→ Timezone handling: UTC storage, local display\n→ Sorting rules vary by language (collation)", qa:[{q:"What do you test in Internationalization testing?",a:"Date and time formats per locale, number and currency formats, RTL layout for Arabic and Hebrew, character encoding (UTF-8), UI string expansion when translated (German/French text is longer), timezone display, locale-specific sorting, and acceptance of non-ASCII character input."},{q:"Difference between I18n and L10n?",a:"I18n (Internationalisation) is engineering — building the product to support multiple locales by externalising strings, using locale-aware libraries. L10n (Localisation) is content — translating and adapting for a specific locale. Good I18n makes L10n simple and code-free."}], tools:["BrowserStack (locale testing)","Pseudo-localisation tools","Chrome locale flags","Crowdin","Transifex"] },
+      { name:"Mobile Testing", done:false, concept:"Mobile testing covers multiple dimensions:\n→ Functional: does the feature work?\n→ Usability: is it easy to use on small screen?\n→ Performance: does it load fast on mobile networks?\n→ Compatibility: works on Android 10, 11, 12, 13, 14?\n→ Installation: clean install, upgrade, downgrade?\n\nKey considerations:\n→ Different screen sizes and resolutions\n→ Touch gestures (tap, swipe, pinch, long press)\n→ Network conditions (2G/3G/4G/WiFi/Offline)\n→ Battery and memory impact\n→ Interruptions: incoming calls, notifications\n→ App permissions handling\n→ Device rotation: portrait and landscape\n\nAppium = leading mobile automation tool (supports both Android and iOS)", qa:[{q:"Difference between native, hybrid, and mobile web apps?",a:"Native apps (Swift/Kotlin) are device-specific — test OS behaviours and hardware integration. Hybrid apps use a WebView wrapper — test both web and native elements. Mobile web apps run in browser — test across different mobile browsers. Appium supports testing all three types."},{q:"How do you test an app under poor network conditions?",a:"Use network throttling tools: Charles Proxy, Android Developer Options network emulation, or BrowserStack. Test: loading states displayed correctly, graceful timeout error messages, retry mechanisms work, offline mode functions (if supported), no data corruption on intermittent connection."}], tools:["Appium","XCUITest","Espresso","BrowserStack","Charles Proxy","Android Emulator"] },
+    ]
+  },
+  { phase:"07", title:"Advanced & Leadership", color:"#F72585", icon:"★", statusLabel:"→ Level Up", statusColor:"#FFD93D",
+    tip:"With 6+ years experience, Cognizant expects quality strategy thinking. Prepare STAR stories around mentoring and test architecture.",
+    topics:[
+      { name:"Test Strategy & Architecture", done:false, concept:"Test Pyramid (Martin Fowler):\n→ BASE: Many fast unit tests (milliseconds each)\n→ MIDDLE: Fewer integration tests\n→ TOP: Even fewer slow E2E tests\n\nAnti-pattern: Ice cream cone (too many E2E, few unit tests) = slow, brittle, expensive.\n\nTest Quadrants:\nQ1: Unit/component tests — tech-facing, built by team\nQ2: Functional/story tests — business-facing, built by team\nQ3: Exploratory/UAT — business-facing, critiques product\nQ4: Performance/security — tech-facing, critiques product\n\nRisk-based testing: prioritise effort based on business impact and failure probability.", qa:[{q:"How do you decide what to automate vs test manually?",a:"Automate: regression suite, smoke tests, data-driven tests, API tests, CI pipeline gates. Keep manual: exploratory testing, usability testing, one-off tests, low ROI automations. ROI calculation: (Time saved per run × number of runs) vs (Time to build + ongoing maintenance cost)."},{q:"What is the test pyramid and why does it matter?",a:"The test pyramid recommends many fast unit tests at base, fewer integration tests in middle, even fewer E2E tests at top. Inverting it (many E2E, few unit) gives slow feedback, high maintenance, and brittle pipelines. The pyramid shape keeps testing fast and reliable."}], tools:["Miro (diagrams)","Confluence","TestRail","JIRA","Risk Register"] },
+      { name:"Metrics & Reporting", done:true, concept:"Key QA Metrics:\n→ Defect Density: defects per KLOC or per story point\n→ DRE (Defect Removal Efficiency): pre-production defects / total defects × 100. Target 95%+\n→ Test Coverage: % of requirements covered by test cases\n→ Execution Rate: tests executed / tests planned\n→ First Pass Yield: % of tests passing without rework\n→ Escaped Defects: bugs that reached production\n→ MTTD: Mean Time to Detect\n→ MTTR: Mean Time to Resolve\n\nFor executives: show trends, not just numbers. Is quality improving sprint over sprint?", qa:[{q:"What QA metrics do you report to stakeholders?",a:"Defect density per sprint, DRE, test pass rate, escaped defects (production bugs), automation coverage %, and open critical or blocker defects. Executives want trend graphs showing improvement. Technical leads want raw numbers and root cause analysis."},{q:"How do you demonstrate QA value to leadership?",a:"Show cost savings: escaped defects cost 10-100x more to fix in production than in development. Track DRE improving over time. Show automation ROI: manual hours replaced by automated runs. Link quality metrics to business outcomes: fewer production incidents, higher customer satisfaction, reduced support tickets."}], tools:["JIRA Dashboards","Grafana","Power BI","Excel","TestRail Reports","Confluence"] },
+      { name:"AI in Testing", done:false, concept:"AI is transforming QA in these key ways:\n\nSelf-Healing Tests:\nTools like Testim and Mabl automatically detect when a UI locator has changed and update it — reducing maintenance overhead significantly.\n\nAI-Assisted Test Generation:\nGitHub Copilot helps write automation code faster. Functionize generates tests from requirements automatically.\n\nVisual AI:\nApplitools uses AI to compare screenshots — ignores inconsequential differences (dynamic content) while catching real visual regressions.\n\nPredictive Analytics:\nAI identifies which areas of code are highest risk and focuses testing effort there based on historical defect patterns.", qa:[{q:"How is AI changing the role of QA engineers?",a:"AI handles repetitive tasks: regression execution, locator maintenance, test data generation. This frees QA to focus on higher-value work: exploratory testing, test strategy, quality advocacy. QA engineers now also need prompt engineering skills and ability to review and validate AI-generated test output."},{q:"What are self-healing tests?",a:"Self-healing tests use AI to automatically detect when a UI element locator has changed and update it without manual intervention. Tools like Testim and Mabl analyse the DOM context around the element to identify it correctly even when attributes change — significantly reducing automation maintenance cost."}], tools:["GitHub Copilot","Testim","Mabl","Applitools Eyes","Functionize","ChatGPT"] },
+    ]
+  }
+];
+
+// ============================================================
+// DATA — PLAYWRIGHT LEARNING PATH
+// ============================================================
+const playwrightSteps = [
+  { stage:"PRE-REQUISITE", title:"Honest Starting Point", color:"#FF6B6B", icon:"⚠️",
+    content:"Before writing a single Playwright test you need to understand these basics. Skipping this stage will cause confusion and frustration later.\n\nTime required: 2-3 weeks of daily 30-minute practice.\n\nDo NOT buy a paid course yet. Use free resources first:\n→ freeCodeCamp.org — JavaScript Algorithms and Data Structures (free)\n→ javascript.info — best free JS reference\n→ YouTube: Traversy Media JavaScript Crash Course\n\nYour goal at this stage: understand the concepts below well enough to recognise them. You do NOT need to memorise everything.",
+    concepts:[
+      { name:"Variables & Data Types", detail:"Variables store data. Three ways to declare:\nlet name = 'Anuradha';  // can change\nconst age = 30;          // cannot change\nvar old = true;          // old way, avoid\n\nData types:\nString: 'hello' or \"hello\"\nNumber: 42 or 3.14\nBoolean: true or false\nArray: [1, 2, 3]\nObject: { name: 'Anu', city: 'Hyderabad' }" },
+      { name:"Functions", detail:"A function is a reusable block of code.\n\nTraditional function:\nfunction greet(name) {\n  return 'Hello ' + name;\n}\n\nArrow function (modern, used in Playwright):\nconst greet = (name) => {\n  return 'Hello ' + name;\n}\n\nOr even shorter:\nconst greet = (name) => 'Hello ' + name;" },
+      { name:"Async / Await", detail:"THIS IS THE MOST IMPORTANT CONCEPT FOR PLAYWRIGHT.\n\nBrowser actions take time (clicking, waiting for pages). JavaScript handles this with async/await.\n\nasync function openPage() {\n  await page.goto('https://google.com');\n  await page.click('#search');\n}\n\nRules:\n→ Functions that use await must be marked async\n→ await makes JS WAIT for that line to finish\n→ Without await, Playwright will not wait and tests fail" },
+      { name:"Node.js & npm basics", detail:"Node.js lets you run JavaScript OUTSIDE the browser — on your computer.\n\nPlaywright runs using Node.js.\n\nnpm (Node Package Manager) installs tools and libraries.\n\nCommands you will use:\nnpm init — start a new project\nnpm install — install dependencies\nnpx playwright test — run Playwright tests\n\nInstall Node.js from: nodejs.org (download LTS version)" },
+    ],
+    qa:[{q:"Why do I need to learn JavaScript before Playwright?",a:"Playwright tests are written in JavaScript or TypeScript. Without understanding variables, functions, and especially async/await, you will copy-paste code without understanding why it works or why it breaks. Troubleshooting becomes impossible."},{q:"Can I use Python instead?",a:"Yes — Playwright supports Python. If you already know some Python basics, that may be faster for you. However the job market in India currently has more JS/TS Playwright roles. Both are valid starting points."}]
+  },
+  { stage:"STAGE 1", title:"Environment Setup", color:"#00D4FF", icon:"🛠️",
+    content:"Once you are comfortable with JavaScript basics, set up your Playwright environment. This is a one-time setup.\n\nTime required: 1-2 hours.",
+    concepts:[
+      { name:"Step 1: Install VS Code", detail:"VS Code (Visual Studio Code) is the best free editor for Playwright.\n\nDownload from: code.visualstudio.com\n\nAfter installing, add these extensions:\n→ Playwright Test for VS Code (official)\n→ ESLint (code quality)\n→ Prettier (code formatting)\n\nVS Code gives you: code highlighting, autocomplete, debugging, and a built-in terminal." },
+      { name:"Step 2: Install Node.js", detail:"Go to nodejs.org and download the LTS version.\n\nAfter installing, open terminal (VS Code has built-in terminal: View → Terminal) and verify:\n\nnode --version\n→ should show v18.x.x or higher\n\nnpm --version\n→ should show 9.x.x or higher\n\nIf these commands work, Node.js is installed correctly." },
+      { name:"Step 3: Create Project & Install Playwright", detail:"In VS Code terminal, run these commands one by one:\n\nmkdir my-playwright-tests\ncd my-playwright-tests\nnpm init -y\nnpm init playwright@latest\n\nPlaywright will ask:\n→ TypeScript or JavaScript? → Choose JavaScript first\n→ Where to put tests? → Press Enter (accept default)\n→ Add GitHub Actions? → No for now\n→ Install browsers? → Yes\n\nThis installs Chromium, Firefox, and WebKit automatically." },
+      { name:"Step 4: Run Your First Test", detail:"Playwright creates a sample test at: tests/example.spec.js\n\nRun it with:\nnpx playwright test\n\nThis opens browsers, runs the sample test, and shows results.\n\nTo see a visual report:\nnpx playwright show-report\n\nIf tests ran (even if some failed), your setup is working correctly. Congratulations — you have Playwright running!" },
+    ],
+    qa:[{q:"Do I need to install browsers separately?",a:"No — Playwright downloads and manages its own browser binaries (Chromium, Firefox, WebKit) separately from your system browsers. The command 'npx playwright install' downloads all three. This ensures tests run on consistent browser versions."},{q:"What if I get errors during installation?",a:"Most common issue: Node.js version too old. Make sure you have Node.js v16 or higher. Second common issue: missing administrator permissions. On Windows, run the terminal as Administrator. On Mac, prefix the command with sudo if needed."}]
+  },
+  { stage:"STAGE 2", title:"Writing Your First Tests", color:"#6BCB77", icon:"✍️",
+    content:"Now you write real tests. Start simple — do not try to test complex applications first.\n\nPractice target: Wikipedia, Google, or a simple demo site like playwright.dev or demoqa.com.",
+    concepts:[
+      { name:"Basic Test Structure", detail:"Every Playwright test file looks like this:\n\nconst { test, expect } = require('@playwright/test');\n\ntest('my first test', async ({ page }) => {\n  // navigate to a URL\n  await page.goto('https://playwright.dev');\n  \n  // assert the page title\n  await expect(page).toHaveTitle(/Playwright/);\n});\n\nBreaking it down:\n→ test() defines a single test case\n→ async ({ page }) gives you a browser page\n→ await is used before every browser action\n→ expect() makes assertions" },
+      { name:"Finding Elements (Locators)", detail:"Playwright has smarter locators than Selenium.\n\nBest locators to use (in order):\n1. Role locator (most recommended):\npage.getByRole('button', { name: 'Login' })\n\n2. Text locator:\npage.getByText('Submit')\n\n3. Label locator (for form fields):\npage.getByLabel('Email Address')\n\n4. Placeholder:\npage.getByPlaceholder('Enter email')\n\n5. Test ID (if developers add data-testid):\npage.getByTestId('login-btn')\n\n6. CSS/XPath (last resort):\npage.locator('#username')\npage.locator('//input[@id=\"user\"]')" },
+      { name:"Common Actions", detail:"Clicking:\nawait page.getByRole('button', {name:'Login'}).click();\n\nTyping:\nawait page.getByLabel('Email').fill('test@email.com');\n\nNavigating:\nawait page.goto('https://example.com');\n\nWaiting (Playwright auto-waits, but sometimes you need to wait for a specific element):\nawait page.getByText('Dashboard').waitFor();\n\nScreenshot:\nawait page.screenshot({ path: 'screenshot.png' });\n\nSelect dropdown:\nawait page.getByLabel('Country').selectOption('India');" },
+      { name:"Assertions (expect)", detail:"Assertions verify that the page looks as expected.\n\nPage title:\nawait expect(page).toHaveTitle('Login Page');\n\nURL:\nawait expect(page).toHaveURL('https://app.com/dashboard');\n\nElement visible:\nawait expect(page.getByText('Welcome')).toBeVisible();\n\nElement text:\nawait expect(page.getByTestId('username')).toHaveText('Anuradha');\n\nElement enabled/disabled:\nawait expect(page.getByRole('button')).toBeEnabled();\nawait expect(page.getByRole('button')).toBeDisabled();\n\nElement count:\nawait expect(page.getByRole('row')).toHaveCount(5);" },
+    ],
+    qa:[{q:"Does Playwright have implicit waits like Selenium?",a:"Playwright has built-in auto-waiting — it automatically waits for elements to be visible, stable, and actionable before interacting. This eliminates most of the explicit wait code needed in Selenium. You rarely need to add manual waits in Playwright."},{q:"What is the best practice for locators in Playwright?",a:"Use role-based and semantic locators first: getByRole(), getByLabel(), getByText(), getByPlaceholder(). These are resilient to UI changes. Avoid CSS selectors and XPath unless there is no semantic alternative — they break when developers rename classes or restructure HTML."}]
+  },
+  { stage:"STAGE 3", title:"Page Object Model in Playwright", color:"#C77DFF", icon:"🏗️",
+    content:"Once you can write basic tests, organise them using POM. This is what employers look for.\n\nSame concept as Selenium POM — different syntax.",
+    concepts:[
+      { name:"Why POM in Playwright", detail:"Without POM (bad practice):\nEvery test directly calls page.locator('#login-btn').click()\nIf the login button ID changes → update in 20 test files.\n\nWith POM (professional practice):\nLoginPage class handles all login page interactions.\nTests just call loginPage.login('user', 'pass').\nIf anything changes → update only LoginPage class.\n\nThis is the standard in professional automation teams." },
+      { name:"Creating a Page Class", detail:"Create a file: pages/LoginPage.js\n\nconst { expect } = require('@playwright/test');\n\nclass LoginPage {\n  constructor(page) {\n    this.page = page;\n    this.usernameField = page.getByLabel('Username');\n    this.passwordField = page.getByLabel('Password');\n    this.loginButton = page.getByRole('button', {name:'Login'});\n    this.errorMessage = page.getByText('Invalid credentials');\n  }\n\n  async goto() {\n    await this.page.goto('https://app.com/login');\n  }\n\n  async login(username, password) {\n    await this.usernameField.fill(username);\n    await this.passwordField.fill(password);\n    await this.loginButton.click();\n  }\n\n  async expectError() {\n    await expect(this.errorMessage).toBeVisible();\n  }\n}\n\nmodule.exports = { LoginPage };" },
+      { name:"Using the Page Class in Tests", detail:"Create a file: tests/login.spec.js\n\nconst { test, expect } = require('@playwright/test');\nconst { LoginPage } = require('../pages/LoginPage');\n\ntest('successful login', async ({ page }) => {\n  const loginPage = new LoginPage(page);\n  await loginPage.goto();\n  await loginPage.login('validUser', 'validPass');\n  await expect(page).toHaveURL('/dashboard');\n});\n\ntest('invalid login shows error', async ({ page }) => {\n  const loginPage = new LoginPage(page);\n  await loginPage.goto();\n  await loginPage.login('wrong', 'wrong');\n  await loginPage.expectError();\n});\n\nClean, readable, maintainable — this is professional level." },
+    ],
+    qa:[{q:"When should I start using POM in my Playwright project?",a:"Start with POM from day one on any project that will have more than 5-10 tests. For learning exercises with 2-3 tests it is fine to write directly. But in a real project or interview task, always use POM — it signals seniority to hiring managers."},{q:"How is Playwright POM different from Selenium POM?",a:"The concept is identical — separate page structure from test logic. The difference is implementation: Playwright uses its own locators (getByRole, getByLabel) instead of @FindBy annotations. Playwright also does not need Page Factory. The pattern is cleaner and simpler in Playwright."}]
+  },
+  { stage:"STAGE 4", title:"API Testing with Playwright", color:"#FF9A3C", icon:"🔗",
+    content:"Playwright is not just for UI — it has a built-in API testing capability that is a strong differentiator in interviews.",
+    concepts:[
+      { name:"Why API Testing in Playwright", detail:"Playwright has a built-in APIRequestContext that lets you:\n→ Test APIs directly without a browser\n→ Set up test data via API before UI tests (faster than UI setup)\n→ Verify backend state after UI actions\n\nThis means you can write both API and UI tests in ONE framework — a big advantage over Selenium which does not have API testing built in." },
+      { name:"Basic API Test", detail:"const { test, expect } = require('@playwright/test');\n\ntest('GET users API returns 200', async ({ request }) => {\n  const response = await request.get(\n    'https://jsonplaceholder.typicode.com/users'\n  );\n  \n  expect(response.status()).toBe(200);\n  \n  const body = await response.json();\n  expect(body).toHaveLength(10);\n  expect(body[0].name).toBeTruthy();\n});\n\nNote: Use { request } instead of { page } for API tests.\nNo browser is opened — it runs purely as API calls." },
+      { name:"POST Request Example", detail:"test('Create user via API', async ({ request }) => {\n  const response = await request.post(\n    'https://jsonplaceholder.typicode.com/users',\n    {\n      data: {\n        name: 'Anuradha',\n        email: 'anu@test.com',\n        role: 'QA Engineer'\n      }\n    }\n  );\n  \n  expect(response.status()).toBe(201);\n  \n  const user = await response.json();\n  expect(user.name).toBe('Anuradha');\n  expect(user.id).toBeTruthy();\n});" },
+      { name:"Using API to Set Up UI Tests", detail:"// Set up test data via API (fast), then test UI (slow)\ntest('user sees their profile', async ({ page, request }) => {\n  \n  // Step 1: Create user via API — fast!\n  const response = await request.post('/api/users', {\n    data: { name: 'Anuradha', email: 'anu@test.com' }\n  });\n  const { id } = await response.json();\n  \n  // Step 2: Log in via UI and verify profile\n  await page.goto('/login');\n  await page.getByLabel('Email').fill('anu@test.com');\n  await page.getByRole('button',{name:'Login'}).click();\n  await expect(page.getByText('Anuradha')).toBeVisible();\n  \n  // Step 3: Clean up via API — fast!\n  await request.delete('/api/users/' + id);\n});" },
+    ],
+    qa:[{q:"Is Playwright better than Postman for API testing?",a:"They serve different purposes. Postman is better for manual API exploration, documentation, and sharing collections with teams. Playwright API testing is better for automated test pipelines, combining API and UI tests in one framework, and running in CI. Use both — Postman for manual testing and discovery, Playwright for automation."},{q:"Can I run API tests without a browser installed?",a:"Yes — Playwright API tests do not open any browser. They run as pure HTTP requests. You can even configure Playwright to skip browser download if you only need API testing, using the PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD environment variable."}]
+  },
+  { stage:"STAGE 5", title:"CI/CD & Reporting", color:"#F72585", icon:"🚀",
+    content:"Running tests locally is not enough. In professional teams, tests run automatically in CI/CD pipelines on every code change. This is a key skill employers look for.",
+    concepts:[
+      { name:"GitHub Actions Setup", detail:"Create a file: .github/workflows/playwright.yml\n\nname: Playwright Tests\non:\n  push:\n    branches: [main]\n  pull_request:\n    branches: [main]\njobs:\n  test:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n      - uses: actions/setup-node@v4\n        with:\n          node-version: '18'\n      - run: npm ci\n      - run: npx playwright install --with-deps\n      - run: npx playwright test\n      - uses: actions/upload-artifact@v4\n        if: always()\n        with:\n          name: playwright-report\n          path: playwright-report/\n          retention-days: 30\n\nNow every push to GitHub runs your Playwright tests automatically!" },
+      { name:"Playwright HTML Report", detail:"Playwright generates a beautiful built-in HTML report automatically.\n\nView it locally:\nnpx playwright show-report\n\nThe report shows:\n→ All test results (pass/fail)\n→ Screenshot on failure\n→ Video replay of test (if configured)\n→ Network requests trace\n→ Console errors\n\nEnable video and screenshot in playwright.config.js:\nuse: {\n  screenshot: 'only-on-failure',\n  video: 'retain-on-failure',\n  trace: 'on-first-retry',\n}" },
+      { name:"Playwright Config File", detail:"playwright.config.js controls all settings:\n\nconst { defineConfig } = require('@playwright/test');\n\nmodule.exports = defineConfig({\n  testDir: './tests',\n  timeout: 30000,\n  retries: 1,\n  reporter: 'html',\n  use: {\n    baseURL: 'https://your-app.com',\n    screenshot: 'only-on-failure',\n    video: 'retain-on-failure',\n    headless: true,\n  },\n  projects: [\n    { name: 'chromium', use: { ...devices['Desktop Chrome'] } },\n    { name: 'firefox', use: { ...devices['Desktop Firefox'] } },\n  ],\n});\n\nKey settings:\n→ retries: 1 — retry failed tests once before marking as failed\n→ headless: true — run without visible browser (needed in CI)\n→ baseURL — set once, use relative URLs in tests" },
+    ],
+    qa:[{q:"Should I use TypeScript or JavaScript for Playwright in job applications?",a:"TypeScript is preferred in the market — most professional Playwright projects use TypeScript because it catches errors before runtime. However, learn JavaScript first to understand the fundamentals, then transition to TypeScript (it is mostly the same with type annotations added). Put TypeScript on your resume once you are comfortable."},{q:"How do I show Playwright skills to an employer without a job?",a:"Build a portfolio project on GitHub: pick a real public website (e.g., saucedemo.com, demoqa.com), write a Playwright test suite with POM, include CI/CD via GitHub Actions, and add a clear README. This shows employers real working code. This is exactly why the GitHub tab in this app is reserved for your projects."}]
+  },
+];
+
+// ============================================================
+// DATA — INTERVIEW PREP
+// ============================================================
+const prepData = {
+  istqb:[
+    { tag:"Principle", q:"What are the 7 principles of software testing?", a:"1) Testing shows presence of defects, not absence. 2) Exhaustive testing is impossible — use risk-based approach. 3) Early testing saves cost. 4) Defect clustering — 80% bugs in 20% modules. 5) Pesticide paradox — same tests stop finding bugs. 6) Testing is context-dependent. 7) Absence-of-errors fallacy — bug-free system can still fail user needs." },
+    { tag:"Foundation", q:"Difference between verification and validation?", a:"Verification: Are we building the product RIGHT? (reviewing specs, design, code). Validation: Are we building the RIGHT product? (testing final product against user needs). Verification is static; validation is dynamic." },
+    { tag:"Foundation", q:"What is risk-based testing?", a:"Prioritising testing effort based on likelihood and impact of failures. High-risk areas (payment, authentication) get more testing. Ensures critical areas are tested first when time is limited — which it always is." },
+    { tag:"Foundation", q:"Difference between re-testing and regression testing?", a:"Re-testing verifies a specific bug has been fixed — you run the exact test that failed. Regression testing verifies the fix has not broken existing functionality — you run the broader test suite around it." },
+    { tag:"Technique", q:"Explain Equivalence Partitioning with an example.", a:"Divide input data into valid and invalid groups. Test one value per group — reduces test cases while maintaining coverage. Example: Age field accepting 18-60. Valid group: test 35. Invalid low group: test 10. Invalid high group: test 70. Three tests instead of testing every number." },
+    { tag:"Foundation", q:"What is a test basis?", a:"All documents from which test requirements can be derived: requirements specs, design docs, code, user manuals, standards. The reference against which test cases are written and traced in the RTM." },
+  ],
+  playwright:[
+    { tag:"Basics", q:"What is Playwright and how is it different from Selenium?", a:"Playwright is a modern browser automation framework by Microsoft. Key differences: built-in auto-waiting (no explicit waits needed), native multi-browser support including WebKit/Safari, built-in API testing, faster execution, better debugging with trace viewer, and modern locators like getByRole() and getByLabel() that are more resilient than XPath." },
+    { tag:"Locators", q:"What locators does Playwright recommend and why?", a:"Priority order: getByRole() (semantic, most resilient), getByLabel() (for form fields), getByText() (visible text), getByPlaceholder(), getByTestId() (if dev adds data-testid), then CSS/XPath as last resort. Role-based locators match how users and assistive technology see the page — they survive UI redesigns better than CSS selectors." },
+    { tag:"Architecture", q:"What is auto-waiting in Playwright?", a:"Playwright automatically waits for elements to be visible, stable, enabled, and actionable before interacting. This eliminates most explicit wait code required in Selenium. Playwright retries the action until it succeeds or times out, making tests more reliable without adding sleep or explicit wait statements." },
+    { tag:"API", q:"How does Playwright handle API testing?", a:"Playwright has a built-in APIRequestContext available via the { request } fixture. It supports GET, POST, PUT, PATCH, DELETE with full headers and body control. This allows combining API setup (fast) with UI testing (slower) in the same test file — a significant advantage over Selenium which has no built-in API capability." },
+    { tag:"Framework", q:"How do you implement POM in Playwright?", a:"Create a class for each page with locators as constructor properties using Playwright locators (getByRole, getByLabel etc.) and action methods (login(), search()). Import the class into test files and instantiate with the page fixture. The pattern is identical to Selenium POM but uses Playwright's cleaner locator API." },
+    { tag:"CI/CD", q:"How do you run Playwright tests in GitHub Actions?", a:"Create .github/workflows/playwright.yml with: trigger on push/pull_request, setup-node step, npm ci to install dependencies, npx playwright install --with-deps to install browsers, npx playwright test to run tests, and upload-artifact to save the HTML report. Tests run automatically on every commit and PR." },
+  ],
+  selenium:[
+    { tag:"Core", q:"Types of locators in Selenium — which is best?", a:"ID (fastest, most stable), Name, ClassName, TagName, LinkText, PartialLinkText, CSS Selector, XPath. Use ID first, then CSS Selector, then XPath only when needed. Avoid absolute XPath — it breaks with any DOM structure change." },
+    { tag:"Core", q:"Difference between implicit and explicit wait?", a:"Implicit wait: global timeout applied to ALL findElement calls. Explicit wait: wait for a specific condition on a specific element (ExpectedConditions). Explicit is always preferred — precise, does not slow down all element lookups globally, and gives clearer error messages." },
+    { tag:"Framework", q:"What is POM and why use it?", a:"Page Object Model separates page locators and actions from test logic. Each page = one class. Tests call page methods, never access locators directly. Benefits: update locators in one place, readable tests, reusable actions, easier maintenance at scale." },
+    { tag:"Exception", q:"How do you handle StaleElementReferenceException?", a:"Occurs when a referenced element is no longer in the DOM (page refreshed or element re-rendered). Fix: re-find the element after the page change, use try-catch with retry logic, or use ExpectedConditions.refreshed() in explicit wait." },
+    { tag:"Framework", q:"What is a Hybrid Framework?", a:"Combines Data-Driven + Keyword-Driven + POM. Structure: config.properties (env settings), Excel or JSON (test data), page classes (POM), keyword actions, TestNG suite runner, utilities (screenshot, logger, reporter). Most commonly asked framework architecture in Selenium interviews." },
+  ],
+  api:[
+    { tag:"Postman", q:"How do you chain requests in Postman?", a:"In the first request Tests tab: pm.environment.set('token', pm.response.json().token). In the second request, use {{token}} as a variable in headers or body. Passes response data from one request to the next — essential for testing login → create → verify → delete flows." },
+    { tag:"REST", q:"HTTP status codes you must know?", a:"200 OK, 201 Created, 204 No Content (success). 400 Bad Request, 401 Unauthorized, 403 Forbidden, 404 Not Found, 409 Conflict, 422 Unprocessable Entity (client errors). 500 Internal Server Error, 503 Service Unavailable (server errors)." },
+    { tag:"Postman", q:"How do you run a Postman collection in CI?", a:"Use Newman — Postman's CLI runner. Command: newman run collection.json -e environment.json --reporters cli,junit. Newman outputs JUnit XML reports that Jenkins or GitHub Actions can parse and display as test results in the pipeline dashboard." },
+    { tag:"REST", q:"Difference between authentication and authorisation testing?", a:"Authentication testing: verify login with invalid credentials, brute force protection, session timeout, password policies. Authorisation testing: verify User A cannot access User B's data, regular user cannot access admin functions (IDOR and privilege escalation testing)." },
+    { tag:"Postman", q:"How do you write assertions in Postman?", a:"In the Tests tab using pm.test():\npm.test('Status is 200', () => pm.response.to.have.status(200));\npm.test('Name exists', () => pm.expect(pm.response.json().name).to.not.be.empty);\npm.test('Response under 2s', () => pm.expect(pm.response.responseTime).to.be.below(2000));" },
+  ],
+  cicd:[
+    { tag:"Jenkins", q:"What is a Jenkins pipeline and its types?", a:"A Jenkins pipeline automates build-test-deploy. Types: Declarative (structured, uses pipeline{} block — recommended) and Scripted (flexible Groovy code). Defined in a Jenkinsfile stored in the repository alongside the code." },
+    { tag:"GitHub Actions", q:"How do you set up automated testing in GitHub Actions?", a:"Create .github/workflows/test.yml: trigger on push/PR, define jobs — checkout code, setup runtime (Node/Java), install dependencies, run tests, publish results. Secrets stored in repository settings. Free for public repos." },
+    { tag:"Concepts", q:"Difference between CI, Continuous Delivery, and Continuous Deployment?", a:"CI: code merged frequently, automated build and test on every commit. Continuous Delivery: code always in deployable state, passes automated tests, needs manual approval for production. Continuous Deployment: every passing commit auto-deploys to production with no manual gate." },
+    { tag:"Quality", q:"What makes a good CI/CD quality gate for testing?", a:"Fail build if: any critical automated tests fail, unit test coverage drops below threshold (80%), code quality rules violated (SonarQube). Always run smoke tests first before full regression. Produce test reports visible in the pipeline dashboard so failures are immediately actionable." },
+    { tag:"Concepts", q:"What is a flaky test and why must it be fixed immediately in CI/CD?", a:"A flaky test gives inconsistent results without code changes. In CI/CD, flaky tests erode trust — teams start ignoring failing pipelines and real failures hide. Fix root causes: explicit waits instead of sleep, independent test data, stable test environments, retry logic only as last resort." },
+  ],
+  manual:[
+    { tag:"Exploratory", q:"What is exploratory testing and when do you use it?", a:"Exploratory testing is simultaneous learning, test design, and execution — no predefined scripts. Use for: new features with unclear requirements, complex business logic, finding edge cases scripted tests miss, and when time is limited. Use session-based testing with time-boxed charters." },
+    { tag:"Priority", q:"How do you prioritise test cases with limited time?", a:"Risk-based: 1) Business-critical features (payment, auth, core workflows). 2) High-traffic areas. 3) Recently changed code. 4) Historically defect-prone modules. 5) Integration points between systems. Always run smoke tests first to confirm build stability." },
+    { tag:"Agile", q:"How do you ensure testing is complete within a sprint?", a:"Start testing as soon as first stories are ready — do not wait. Raise blockers in daily standup. Write test cases before development finishes (Shift-Left). Identify scope risk by mid-sprint. Agree DoD with the team — stories not fully tested do not count as done." },
+    { tag:"Bug Reporting", q:"What information do you include in a bug report?", a:"1) Clear specific title. 2) Environment details. 3) Preconditions. 4) Numbered reproduction steps. 5) Expected result. 6) Actual result. 7) Severity and Priority. 8) Attachments (screenshot, video, logs). One bug per report. Always verify you can reproduce it before logging." },
+    { tag:"Technique", q:"How do you approach testing a new feature with no requirements?", a:"1) Talk to stakeholders to understand intent. 2) Look at similar existing features. 3) Use exploratory testing with session charters. 4) Apply SFDPOT heuristics (Structure, Function, Data, Platform, Operations, Time). 5) Document findings. 6) Raise ambiguity queries formally. 7) Update test cases after clarification." },
+  ],
+};
+
+// ============================================================
+// DATA — MARKET SKILLS
+// ============================================================
+const marketSkills = [
+  { icon:"🎭", title:"Playwright (JS/TS)", demand:"🔥 HIGHEST DEMAND", demandColor:"#FF6B6B", text:"Playwright has become the most in-demand automation tool in 2024-25, overtaking Selenium in new job postings. Companies like Microsoft, Google, and most product companies now use it. If you learn one new tool, make it Playwright. JS/TS Playwright roles pay 20-30% more than Selenium-only roles.", roadmap:"Start: JavaScript basics → Node.js → Playwright basics → POM → CI/CD\nTime: 3-4 months of consistent daily practice" },
+  { icon:"🔗", title:"API Testing (Postman + REST Assured)", demand:"🔥 HIGH DEMAND", demandColor:"#FF9A3C", text:"Every QA job description in 2025 lists API testing. You already know Postman — that is a strong foundation. Extend to REST Assured (Java) for automation-heavy roles, or use Playwright's request context for a unified framework. Newman for CI integration is frequently asked.", roadmap:"You have: Postman basics\nAdd: Postman chaining, Newman CLI, REST Assured basics\nTime: 3-4 weeks" },
+  { icon:"🔀", title:"Git & Version Control", demand:"⚡ ESSENTIAL", demandColor:"#00D4FF", text:"Git is now non-negotiable for any QA automation role. If you cannot use Git, you cannot submit automation code in a professional team. The good news: you only need about 8 commands for daily work. And you already have a GitHub account — start committing your test code there.", roadmap:"Learn: git clone, add, commit, push, pull, branch, merge, status\nPractice: commit your Playwright tests to GitHub daily\nTime: 1-2 weeks" },
+  { icon:"🐳", title:"Docker Basics for QA", demand:"📈 GROWING DEMAND", demandColor:"#C77DFF", text:"Docker is appearing in more QA job descriptions as teams move to containerised testing environments. You do not need to be a Docker expert — but understanding containers, images, and running Selenium Grid or Playwright in Docker is becoming a differentiator. Start after you are comfortable with Playwright.", roadmap:"Learn: what is a container, basic docker commands, running tests in Docker\nTime: 2-3 weeks (after Playwright is solid)" },
+  { icon:"☁️", title:"BrowserStack / Sauce Labs", demand:"📈 GROWING DEMAND", demandColor:"#6BCB77", text:"Cloud testing platforms allow running tests on real devices and browsers without maintaining your own device lab. BrowserStack is the market leader. Most enterprise clients use it for cross-browser and mobile testing. You already have A11y and I18n expertise — combining that with BrowserStack is a strong differentiator.", roadmap:"Learn: BrowserStack automate integration with Playwright/Selenium\nSign up for free trial and run your first cloud test\nTime: 1-2 weeks" },
+  { icon:"🤖", title:"AI-Assisted Testing", demand:"🌱 EMERGING", demandColor:"#FFD93D", text:"GitHub Copilot for writing test code faster, Testim/Mabl for self-healing tests, and AI test generation are emerging skills. Do NOT prioritise this before mastering fundamentals. Employers still value solid Playwright/Selenium + API testing far more than AI tool familiarity. Add AI tools after your core skills are solid.", roadmap:"Current priority: LOW — master Playwright first\nAdd later: GitHub Copilot for test code generation\nTime: after 6 months of Playwright practice" },
+];
+
+// ============================================================
+// DATA — COGNIZANT
+// ============================================================
+const cognizantData = {
+  focusAreas:[
+    { title:"Selenium + Java (Core Requirement)", detail:"Cognizant's primary automation stack is Selenium with Java. Expect live coding or whiteboard questions on locators, explicit waits, POM implementation, and TestNG annotations. Practice writing a complete login test with POM from memory." },
+    { title:"API Testing with Postman", detail:"Expect hands-on Postman questions — chaining requests, writing assertions in the Tests tab, using environment variables, and knowing all key HTTP status codes. Also know how to run collections via Newman in CI pipeline." },
+    { title:"Agile and Scrum Process", detail:"Cognizant clients are Agile. Be ready to describe your sprint ceremonies experience, how you managed testing within a sprint, your Definition of Done, and how you handled situations where development finished late and there was no time for testing." },
+    { title:"Your A11y and I18n Expertise", detail:"This is RARE in the QA market. Lead with it proactively in every interview. Describe axe DevTools usage, WCAG AA compliance testing, NVDA screen reader testing, and I18n scenarios (RTL, locale-specific formats). This differentiates you from 90% of candidates who have never tested accessibility." },
+    { title:"CI/CD Pipeline Understanding", detail:"Be ready to explain how tests run in Jenkins or GitHub Actions, what triggers the pipeline, how test results are reported, and what a quality gate means. You do not need to set up Jenkins from scratch — but you must explain the flow confidently." },
+    { title:"Metrics and Data-Driven Answers", detail:"Have real numbers ready from your current project. Defect density, DRE, test coverage %, automation coverage %. Cognizant interviewers appreciate QA answers backed by data, not just descriptions of process." },
+  ],
+  starStories:[
+    { title:"Automation ROI — Best Story to Open With", story:"S: Manual regression suite was taking 3 days per sprint, blocking releases.\nT: Automate critical path regression to speed up delivery.\nA: Built Selenium + Java framework using POM and TestNG, automated 150 test cases, integrated into Jenkins pipeline.\nR: Regression time reduced from 3 days to 4 hours. Team could release every sprint instead of every 2 sprints." },
+    { title:"A11y Impact Story — Your Differentiator", story:"S: Product was failing WCAG AA compliance for a US enterprise client.\nT: Identify and help fix all AA-level accessibility violations.\nA: Used axe DevTools and NVDA screen reader to audit the application, raised 40+ A11y defects with detailed steps and WCAG references.\nR: Product achieved WCAG AA compliance within 2 sprints. Client contract was retained." },
+    { title:"Shift-Left Initiative", story:"S: QA was always the bottleneck at end of sprint — finding critical defects too late.\nT: Introduce Shift-Left practices.\nA: Started attending requirement reviews, introduced BDD Gherkin scenarios, began writing test cases during development.\nR: Critical defect detection moved 80% to before development start. Sprint completion rate improved." },
+    { title:"Defect Prevention", story:"S: Same type of validation defects kept recurring sprint after sprint.\nT: Identify root cause and prevent recurrence.\nA: Analysed defect patterns, ran root cause session with dev team, created a validation checklist for developers, added specific automated checks.\nR: That category of defect reduced by 70% in the next quarter." },
+  ]
+};
+
+// ============================================================
+// STATE & STORAGE
+// ============================================================
+const STORAGE_KEY = 'qa_master_v2';
+let progress = {};
+function loadProgress() { try { progress = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; } catch(e) { progress = {}; } }
+function saveProgress() { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(progress)); } catch(e) {} }
+function getStatus(key) { return progress[key] || 'not-started'; }
+function setStatus(key, val) { progress[key] = val; saveProgress(); }
+function resetProgress() { if(confirm('Reset all progress? Cannot be undone.')) { progress = {}; saveProgress(); renderTracker(); } }
+const statusConfig = {
+  'not-started':{ label:'Not Started', color:'#444', bg:'#1a1a2a' },
+  'assigned':{ label:'Assigned', color:'#00D4FF', bg:'#00D4FF18' },
+  'in-progress':{ label:'In Progress', color:'#FFD93D', bg:'#FFD93D18' },
+  'completed':{ label:'Completed', color:'#6BCB77', bg:'#6BCB7718' },
+};
+
+// ============================================================
+// PAGE NAVIGATION
+// ============================================================
+function showPage(name, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ============================================================
+// RENDER ROADMAP
+// ============================================================
+let openPhase = null;
+const openTopics = {};
+function renderRoadmap() {
+  const c = document.getElementById('roadmap-container');
+  c.innerHTML = '';
+  phases.forEach((p, pi) => {
+    const isOpen = openPhase === pi;
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.style.border = `1.5px solid ${isOpen ? p.color : '#1e1e32'}`;
+    card.style.background = isOpen ? '#141422' : '#0f0f1a';
+    if(isOpen) card.style.boxShadow = `0 0 30px ${p.color}25`;
+    const header = document.createElement('div');
+    header.className = 'card-header';
+    header.innerHTML = `<div class="icon-box" style="background:${p.color}20;border:1.5px solid ${p.color}55">${p.icon}</div><div class="card-meta"><div class="card-num">PHASE ${p.phase}</div><div class="card-name">${p.title}</div></div><div class="card-right"><span class="badge" style="color:${p.statusColor};border:1px solid ${p.statusColor}55">${p.statusLabel}</span><span class="toggle-btn" style="color:${p.color}">${isOpen?'−':'+'}</span></div>`;
+    header.addEventListener('click', () => { openPhase = openPhase===pi?null:pi; renderRoadmap(); });
+    card.appendChild(header);
+    if(isOpen) {
+      const body = document.createElement('div');
+      body.className = 'card-body'; body.style.display='block';
+      if(p.tip) body.innerHTML = `<div class="cog-tip-box"><div class="cog-tip-label">🎯 COGNIZANT TIP</div><div class="cog-tip-text">${p.tip}</div></div>`;
+      p.topics.forEach((t, ti) => {
+        const key = `r-${pi}-${ti}`;
+        const isTopicOpen = !!openTopics[key];
+        const tc = document.createElement('div'); tc.className='topic-card'; tc.style.borderColor=isTopicOpen?p.color+'88':'#1e1e32';
+        const th = document.createElement('div'); th.className='topic-header';
+        th.innerHTML = `<div class="check-circle" style="background:${t.done?p.color+'30':'#141422'};border:1.5px solid ${t.done?p.color:'#2a2a40'};color:${t.done?p.color:'#444'}">${t.done?'✓':'○'}</div><div class="topic-title" style="color:${t.done?'#ddd':'#aaa'}">${t.name}</div><div class="topic-toggle" style="color:${p.color}">${isTopicOpen?'−':'+'}</div>`;
+        th.addEventListener('click', e => { e.stopPropagation(); openTopics[key]=!openTopics[key]; renderRoadmap(); });
+        tc.appendChild(th);
+        if(isTopicOpen) {
+          const tb = document.createElement('div'); tb.className='topic-body'; tb.style.display='block';
+          tb.innerHTML=`<div class="section"><div class="sec-label" style="background:${p.color}22;color:${p.color}">📘 KEY CONCEPTS</div><div class="body-text">${t.concept.replace(/\n/g,'<br>')}</div></div><div class="section"><div class="sec-label" style="background:#FFD93D22;color:#FFD93D">🎯 INTERVIEW Q&A</div>${t.qa.map(q=>`<div class="qa-item"><div class="qa-q">Q: ${q.q}</div><div class="qa-a">${q.a}</div></div>`).join('')}</div><div class="section"><div class="sec-label" style="background:#6BCB7722;color:#6BCB77">🛠 TOOLS & RESOURCES</div><div class="tools-grid">${t.tools.map(tool=>`<span class="tool-tag" style="background:${p.color}18;border:1px solid ${p.color}44;color:${p.color}">${tool}</span>`).join('')}</div></div>`;
+          tc.appendChild(tb);
+        }
+        body.appendChild(tc);
+      });
+      card.appendChild(body);
+    }
+    c.appendChild(card);
+  });
+}
+
+// ============================================================
+// RENDER PLAYWRIGHT
+// ============================================================
+const openPW = {};
+const openPWConcept = {};
+function renderPlaywright() {
+  const c = document.getElementById('playwright-container');
+  c.innerHTML = '';
+  playwrightSteps.forEach((step, si) => {
+    const isOpen = !!openPW[si];
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.style.border = `1.5px solid ${isOpen ? step.color : '#1e1e32'}`;
+    card.style.background = isOpen ? '#141422' : '#0f0f1a';
+    if(isOpen) card.style.boxShadow = `0 0 30px ${step.color}25`;
+    const header = document.createElement('div');
+    header.className = 'card-header';
+    header.innerHTML = `<div class="icon-box" style="background:${step.color}20;border:1.5px solid ${step.color}55;font-size:22px">${step.icon}</div><div class="card-meta"><div class="card-num">${step.stage}</div><div class="card-name">${step.title}</div></div><div class="card-right"><span class="toggle-btn" style="color:${step.color}">${isOpen?'−':'+'}</span></div>`;
+    header.addEventListener('click', () => { openPW[si]=!openPW[si]; renderPlaywright(); });
+    card.appendChild(header);
+    if(isOpen) {
+      const body = document.createElement('div'); body.className='card-body'; body.style.display='block';
+      body.innerHTML = `<div class="body-text" style="margin-bottom:14px">${step.content.replace(/\n/g,'<br>')}</div>`;
+      step.concepts.forEach((con, ci) => {
+        const key = `pw-${si}-${ci}`;
+        const isConOpen = !!openPWConcept[key];
+        const tc = document.createElement('div'); tc.className='topic-card'; tc.style.borderColor=isConOpen?step.color+'88':'#1e1e32';
+        const th = document.createElement('div'); th.className='topic-header';
+        th.innerHTML = `<div class="check-circle" style="background:${step.color}20;border:1.5px solid ${step.color}55;color:${step.color};font-size:9px">${ci+1}</div><div class="topic-title" style="color:#ddd">${con.name}</div><div class="topic-toggle" style="color:${step.color}">${isConOpen?'−':'+'}</div>`;
+        th.addEventListener('click', e => { e.stopPropagation(); openPWConcept[key]=!openPWConcept[key]; renderPlaywright(); });
+        tc.appendChild(th);
+        if(isConOpen) {
+          const tb = document.createElement('div'); tb.className='topic-body'; tb.style.display='block';
+          tb.innerHTML = `<div class="code-block">${con.detail}</div>`;
+          tc.appendChild(tb);
+        }
+        body.appendChild(tc);
+      });
+      if(step.qa) {
+        const qaDiv = document.createElement('div'); qaDiv.className='section';
+        qaDiv.innerHTML = `<div class="sec-label" style="background:#FFD93D22;color:#FFD93D">🎯 INTERVIEW Q&A</div>${step.qa.map(q=>`<div class="qa-item"><div class="qa-q">Q: ${q.q}</div><div class="qa-a">${q.a}</div></div>`).join('')}`;
+        body.appendChild(qaDiv);
+      }
+      card.appendChild(body);
+    }
+    c.appendChild(card);
+  });
+}
+
+// ============================================================
+// RENDER TRACKER
+// ============================================================
+const openTrackerPhases = {};
+function renderTracker() {
+  const c = document.getElementById('tracker-container');
+  c.innerHTML = '';
+  let totalCompleted = 0, totalTopics = 0;
+
+  // Roadmap section label
+  const rmLabel = document.createElement('div');
+  rmLabel.style.cssText = 'font-size:9px;color:#00D4FF;letter-spacing:3px;font-family:monospace;margin:0 0 10px;padding-left:4px';
+  rmLabel.textContent = '🗺️ TESTING ROADMAP PHASES';
+  c.appendChild(rmLabel);
+
+  phases.forEach((p, pi) => {
+    let phaseCompleted = 0;
+    p.topics.forEach((t, ti) => {
+      totalTopics++;
+      if(getStatus(`t-${pi}-${ti}`) === 'completed') { totalCompleted++; phaseCompleted++; }
+    });
+    const phasePct = Math.round((phaseCompleted / p.topics.length) * 100);
+    const isOpen = !!openTrackerPhases[pi];
+    const card = document.createElement('div');
+    card.className = 'tracker-phase';
+    card.style.border = `1px solid ${isOpen ? p.color+'66' : '#1e1e32'}`;
+    const header = document.createElement('div');
+    header.className = 'tracker-phase-header';
+    header.innerHTML = `<div style="width:32px;height:32px;border-radius:6px;background:${p.color}20;border:1px solid ${p.color}44;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">${p.icon}</div><div style="flex:1"><div style="font-size:9px;color:#444;font-family:monospace;letter-spacing:2px">PHASE ${p.phase}</div><div style="font-size:14px;font-weight:bold;font-style:italic;color:#fff">${p.title}</div><div style="margin-top:4px"><div class="progress-wrap" style="height:4px"><div class="progress-fill" style="background:${p.color};width:${phasePct}%"></div></div></div></div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:2px"><span style="font-size:12px;font-family:monospace;color:${p.color}">${phasePct}%</span><span style="font-size:20px;font-family:monospace;color:${p.color};font-weight:300">${isOpen?'−':'+'}</span></div>`;
+    header.addEventListener('click', () => { openTrackerPhases[pi]=!openTrackerPhases[pi]; renderTracker(); });
+    card.appendChild(header);
+    if(isOpen) {
+      const body = document.createElement('div');
+      body.style.cssText = 'display:block;padding:0 14px 12px';
+      p.topics.forEach((t, ti) => {
+        const key = `t-${pi}-${ti}`;
+        const status = getStatus(key);
+        const sc = statusConfig[status];
+        const row = document.createElement('div'); row.className='tracker-topic-row';
+        row.innerHTML = `<div style="width:10px;height:10px;border-radius:50%;background:${sc.color};flex-shrink:0"></div><div class="tracker-topic-name">${t.name}</div><select class="status-select" style="color:${sc.color};border-color:${sc.color}44"><option value="not-started" ${status==='not-started'?'selected':''}>Not Started</option><option value="assigned" ${status==='assigned'?'selected':''}>Assigned</option><option value="in-progress" ${status==='in-progress'?'selected':''}>In Progress</option><option value="completed" ${status==='completed'?'selected':''}>Completed</option></select>`;
+        row.querySelector('select').addEventListener('change', e => { setStatus(key, e.target.value); renderTracker(); });
+        body.appendChild(row);
+      });
+      card.appendChild(body);
+    }
+    c.appendChild(card);
+  });
+  // Playwright section label
+  const pwLabel = document.createElement('div');
+  pwLabel.style.cssText = 'font-size:9px;color:#6BCB77;letter-spacing:3px;font-family:monospace;margin:20px 0 10px;padding-left:4px';
+  pwLabel.textContent = '🎭 PLAYWRIGHT LEARNING PATH';
+  c.appendChild(pwLabel);
+
+  // Playwright stages
+  playwrightSteps.forEach((step, si) => {
+    const isOpen = !!openTrackerPhases[`pw-${si}`];
+    // each step has concepts as sub-items
+    const items = step.concepts;
+    let stepCompleted = 0;
+    items.forEach((con, ci) => {
+      totalTopics++;
+      if(getStatus(`pw-track-${si}-${ci}`) === 'completed') { totalCompleted++; stepCompleted++; }
+    });
+    const stepPct = Math.round((stepCompleted / items.length) * 100);
+
+    const card = document.createElement('div');
+    card.className = 'tracker-phase';
+    card.style.border = `1px solid ${isOpen ? step.color+'66' : '#1e1e32'}`;
+
+    const header = document.createElement('div');
+    header.className = 'tracker-phase-header';
+    header.innerHTML = `
+      <div style="width:32px;height:32px;border-radius:6px;background:${step.color}20;border:1px solid ${step.color}44;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">${step.icon}</div>
+      <div style="flex:1">
+        <div style="font-size:9px;color:#444;font-family:monospace;letter-spacing:2px">${step.stage}</div>
+        <div style="font-size:14px;font-weight:bold;font-style:italic;color:#fff">${step.title}</div>
+        <div style="margin-top:4px"><div class="progress-wrap" style="height:4px"><div class="progress-fill" style="background:${step.color};width:${stepPct}%"></div></div></div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:2px">
+        <span style="font-size:12px;font-family:monospace;color:${step.color}">${stepPct}%</span>
+        <span style="font-size:20px;font-family:monospace;color:${step.color};font-weight:300">${isOpen?'−':'+'}</span>
+      </div>`;
+    header.addEventListener('click', () => { openTrackerPhases[`pw-${si}`]=!openTrackerPhases[`pw-${si}`]; renderTracker(); });
+    card.appendChild(header);
+
+    if(isOpen) {
+      const body = document.createElement('div');
+      body.style.cssText = 'display:block;padding:0 14px 12px';
+      items.forEach((con, ci) => {
+        const key = `pw-track-${si}-${ci}`;
+        const status = getStatus(key);
+        const sc = statusConfig[status];
+        const row = document.createElement('div'); row.className='tracker-topic-row';
+        row.innerHTML = `<div style="width:10px;height:10px;border-radius:50%;background:${sc.color};flex-shrink:0"></div><div class="tracker-topic-name">${con.name}</div><select class="status-select" style="color:${sc.color};border-color:${sc.color}44"><option value="not-started" ${status==='not-started'?'selected':''}>Not Started</option><option value="assigned" ${status==='assigned'?'selected':''}>Assigned</option><option value="in-progress" ${status==='in-progress'?'selected':''}>In Progress</option><option value="completed" ${status==='completed'?'selected':''}>Completed</option></select>`;
+        row.querySelector('select').addEventListener('change', e => { setStatus(key, e.target.value); renderTracker(); });
+        body.appendChild(row);
+      });
+      card.appendChild(body);
+    }
+    c.appendChild(card);
+  });
+
+  const overallPct = totalTopics > 0 ? Math.round((totalCompleted/totalTopics)*100) : 0;
+  document.getElementById('overall-pct').textContent = overallPct + '%';
+  document.getElementById('overall-bar').style.width = overallPct + '%';
+  document.getElementById('overall-counts').textContent = `${totalCompleted} / ${totalTopics} topics`;
+}
+
+// ============================================================
+// RENDER PREP
+// ============================================================
+function showPrepTab(tab, btn) {
+  document.querySelectorAll('.prep-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.prep-section').forEach(s=>s.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('prep-'+tab).classList.add('active');
+}
+function renderPrep() {
+  const c = document.getElementById('prep-container');
+  c.innerHTML = '';
+  const tabColors = { istqb:'#00D4FF', playwright:'#6BCB77', selenium:'#FF6B6B', api:'#C77DFF', cicd:'#FFD93D', manual:'#FF9A3C' };
+  Object.keys(prepData).forEach(tab => {
+    const section = document.createElement('div');
+    section.className = 'prep-section' + (tab==='istqb'?' active':'');
+    section.id = 'prep-'+tab;
+    const color = tabColors[tab] || '#00D4FF';
+    prepData[tab].forEach(item => {
+      section.innerHTML += `<div class="prep-card"><span class="prep-tag" style="background:${color}22;color:${color};border:1px solid ${color}44">${item.tag}</span><div class="qa-q">Q: ${item.q}</div><div class="qa-a">${item.a}</div></div>`;
+    });
+    c.appendChild(section);
+  });
+}
+
+// ============================================================
+// RENDER MARKET
+// ============================================================
+function renderMarket() {
+  const c = document.getElementById('market-container');
+  c.innerHTML = `<div style="font-size:11px;color:#555;font-family:monospace;line-height:1.7;margin-bottom:16px;padding:12px;background:#0f0f1a;border:1px solid #1e1e32;border-radius:8px">These are the skills the market is asking for in 2025-26 for QA Automation roles in India. Prioritise in the order shown — do not try to learn everything at once.</div>`;
+  marketSkills.forEach(skill => {
+    c.innerHTML += `<div class="market-card"><div style="display:flex;align-items:center;gap:10px;margin-bottom:6px"><span style="font-size:24px">${skill.icon}</span><div><div style="font-size:15px;font-weight:bold;font-style:italic;color:#fff">${skill.title}</div><span class="demand-badge" style="background:${skill.demandColor}22;color:${skill.demandColor};border:1px solid ${skill.demandColor}44">${skill.demand}</span></div></div><div class="market-text">${skill.text}</div><div style="margin-top:10px;padding:10px;background:#0a0a14;border-radius:6px;border:1px solid #1e1e32"><div style="font-size:9px;color:#555;font-family:monospace;letter-spacing:2px;margin-bottom:4px">LEARNING ROADMAP</div><div style="font-size:11px;color:#6BCB77;font-family:monospace;line-height:1.7">${skill.roadmap.replace(/\n/g,'<br>')}</div></div></div>`;
+  });
+}
+
+// ============================================================
+// RENDER COGNIZANT
+// ============================================================
+function renderCognizant() {
+  const c = document.getElementById('cognizant-container');
+  c.innerHTML = `<div style="font-size:10px;color:#F72585;letter-spacing:3px;font-family:monospace;margin-bottom:14px">🎯 FOCUS AREAS FOR COGNIZANT</div>${cognizantData.focusAreas.map(f=>`<div class="cog-card"><div class="cog-label">${f.title}</div><div class="cog-text">${f.detail}</div></div>`).join('')}<div style="font-size:10px;color:#FFD93D;letter-spacing:3px;font-family:monospace;margin:20px 0 14px">⭐ STAR STORIES TO PREPARE</div>${cognizantData.starStories.map(s=>`<div class="star-card"><div class="star-label">${s.title}</div><div class="star-text">${s.story.replace(/\n/g,'<br>')}</div></div>`).join('')}`;
+}
+
+// ============================================================
+// INIT
+// ============================================================
+loadProgress();
+renderRoadmap();
+renderPlaywright();
+renderTracker();
+renderPrep();
+renderMarket();
+renderCognizant();
+</script>
+</body>
+</html>
