@@ -175,8 +175,8 @@ body { background: #0a0a0f; color: #fff; font-family: Georgia, serif; min-height
     <div class="page-title">GitHub Portfolio</div>
   </div>
 
-  <!-- Profile -->
-  <div style="background:#0f0f1a;border:1px solid #1e1e32;border-radius:10px;padding:16px;margin-bottom:14px;display:flex;align-items:center;gap:14px">
+  <!-- Profile card -->
+  <div style="background:#0f0f1a;border:1px solid #1e1e32;border-radius:10px;padding:16px;margin-bottom:16px;display:flex;align-items:center;gap:14px">
     <div style="font-size:40px">🐙</div>
     <div>
       <div style="font-size:9px;color:#444;font-family:monospace;letter-spacing:3px">GITHUB PROFILE</div>
@@ -185,35 +185,7 @@ body { background: #0a0a0f; color: #fff; font-family: Georgia, serif; min-height
     </div>
   </div>
 
-  <!-- Playwright Repo -->
-  <div style="background:#0f0f1a;border:1.5px solid #6BCB7766;border-radius:10px;padding:16px;margin-bottom:14px">
-    <div style="font-size:9px;color:#6BCB77;letter-spacing:3px;font-family:monospace;margin-bottom:8px">🎭 PLAYWRIGHT PROJECT</div>
-    <div style="font-size:15px;font-weight:bold;font-style:italic;color:#fff;margin-bottom:4px">playwright-tests</div>
-    <div style="font-size:11px;color:#888;font-family:monospace;line-height:1.8;margin-bottom:10px">Automated test scripts using Playwright + JavaScript<br>✅ Login test — 3 browsers passing<br>✅ Chromium | Firefox | WebKit</div>
-    <a href="https://github.com/Anuradha-ops/playwright-tests" target="_blank" style="display:inline-block;padding:6px 16px;background:#6BCB7722;border:1px solid #6BCB7766;color:#6BCB77;font-size:11px;font-family:monospace;border-radius:6px;text-decoration:none">View Repository →</a>
-  </div>
-
-  <!-- QA Master App Repo -->
-  <div style="background:#0f0f1a;border:1.5px solid #00D4FF66;border-radius:10px;padding:16px;margin-bottom:14px">
-    <div style="font-size:9px;color:#00D4FF;letter-spacing:3px;font-family:monospace;margin-bottom:8px">🗺️ QA MASTER APP</div>
-    <div style="font-size:15px;font-weight:bold;font-style:italic;color:#fff;margin-bottom:4px">qa-master-app</div>
-    <div style="font-size:11px;color:#888;font-family:monospace;line-height:1.8;margin-bottom:10px">PWA — Software Testing Roadmap & Interview Prep<br>✅ Live on GitHub Pages<br>✅ 7 tabs | Progress Tracker | Cognizant Prep</div>
-    <div style="display:flex;gap:8px;flex-wrap:wrap">
-      <a href="https://github.com/Anuradha-ops/qa-master-app" target="_blank" style="display:inline-block;padding:6px 16px;background:#00D4FF22;border:1px solid #00D4FF66;color:#00D4FF;font-size:11px;font-family:monospace;border-radius:6px;text-decoration:none">View Repository →</a>
-      <a href="https://anuradha-ops.github.io/qa-master-app" target="_blank" style="display:inline-block;padding:6px 16px;background:#00D4FF22;border:1px solid #00D4FF66;color:#00D4FF;font-size:11px;font-family:monospace;border-radius:6px;text-decoration:none">Live App →</a>
-    </div>
-  </div>
-
-  <!-- Coming next -->
-  <div style="background:#0f0f1a;border:1px solid #1e1e32;border-radius:10px;padding:16px;margin-bottom:14px">
-    <div style="font-size:9px;color:#FFD93D;letter-spacing:3px;font-family:monospace;margin-bottom:10px">🚀 COMING NEXT</div>
-    <div style="font-size:12px;color:#555;font-family:monospace;line-height:2">
-      ⬜ Login test with POM structure<br>
-      ⬜ Invalid login test<br>
-      ⬜ API tests with Playwright<br>
-      ⬜ GitHub Actions CI/CD pipeline
-    </div>
-  </div>
+  <div id="github-container"></div>
 </div>
 
 <script>
@@ -693,8 +665,89 @@ function renderMarket() {
 }
 
 // ============================================================
-// RENDER COGNIZANT
+// RENDER GITHUB
 // ============================================================
+const githubRepos = [
+  { icon:"🎭", title:"playwright-tests", color:"#6BCB77", repoUrl:"https://github.com/Anuradha-ops/playwright-tests", liveUrl:null,
+    desc:"Automated test scripts using Playwright + JavaScript",
+    topics:[
+      { name:"Login test — valid credentials ✅" },
+      { name:"Login test with POM structure" },
+      { name:"Invalid login test" },
+      { name:"API tests with Playwright" },
+      { name:"GitHub Actions CI/CD pipeline" },
+    ]
+  },
+  { icon:"🗺️", title:"qa-master-app", color:"#00D4FF", repoUrl:"https://github.com/Anuradha-ops/qa-master-app", liveUrl:"https://anuradha-ops.github.io/qa-master-app",
+    desc:"PWA — Software Testing Roadmap & Interview Prep",
+    topics:[
+      { name:"7 tabs — Roadmap, Playwright, Tracker, Prep, Market, Cognizant, GitHub ✅" },
+      { name:"Progress Tracker with localStorage ✅" },
+      { name:"Playwright Learning Path ✅" },
+      { name:"Cognizant Interview Prep ✅" },
+      { name:"Live on GitHub Pages ✅" },
+    ]
+  },
+];
+
+const openGithubCards = {};
+function renderGithub() {
+  const c = document.getElementById('github-container');
+  c.innerHTML = '';
+  githubRepos.forEach((repo, ri) => {
+    const isOpen = !!openGithubCards[ri];
+    let completed = 0;
+    repo.topics.forEach((t, ti) => { if(getStatus(`gh-${ri}-${ti}`) === 'completed') completed++; });
+    const pct = Math.round((completed / repo.topics.length) * 100);
+
+    const card = document.createElement('div');
+    card.className = 'tracker-phase';
+    card.style.border = `1px solid ${isOpen ? repo.color+'66' : '#1e1e32'}`;
+    if(isOpen) card.style.boxShadow = `0 0 20px ${repo.color}15`;
+
+    const header = document.createElement('div');
+    header.className = 'tracker-phase-header';
+    header.innerHTML = `
+      <div style="width:32px;height:32px;border-radius:6px;background:${repo.color}20;border:1px solid ${repo.color}44;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">${repo.icon}</div>
+      <div style="flex:1">
+        <div style="font-size:9px;color:#444;font-family:monospace;letter-spacing:2px">REPOSITORY</div>
+        <div style="font-size:14px;font-weight:bold;font-style:italic;color:#fff">${repo.title}</div>
+        <div style="margin-top:4px"><div class="progress-wrap" style="height:4px"><div class="progress-fill" style="background:${repo.color};width:${pct}%"></div></div></div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:2px">
+        <span style="font-size:12px;font-family:monospace;color:${repo.color}">${pct}%</span>
+        <span style="font-size:20px;font-family:monospace;color:${repo.color};font-weight:300">${isOpen?'−':'+'}</span>
+      </div>`;
+    header.addEventListener('click', () => { openGithubCards[ri]=!openGithubCards[ri]; renderGithub(); });
+    card.appendChild(header);
+
+    if(isOpen) {
+      const body = document.createElement('div');
+      body.style.cssText = 'display:block;padding:0 14px 14px';
+      // Description
+      body.innerHTML = `<div style="font-size:11px;color:#666;font-family:monospace;margin-bottom:12px;padding-top:4px">${repo.desc}</div>`;
+      // Links
+      const links = document.createElement('div');
+      links.style.cssText = 'display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px';
+      links.innerHTML = `<a href="${repo.repoUrl}" target="_blank" style="padding:5px 12px;background:${repo.color}22;border:1px solid ${repo.color}66;color:${repo.color};font-size:10px;font-family:monospace;border-radius:6px;text-decoration:none">View Repo →</a>`;
+      if(repo.liveUrl) links.innerHTML += `<a href="${repo.liveUrl}" target="_blank" style="padding:5px 12px;background:${repo.color}22;border:1px solid ${repo.color}66;color:${repo.color};font-size:10px;font-family:monospace;border-radius:6px;text-decoration:none">Live App →</a>`;
+      body.appendChild(links);
+      // Topics
+      repo.topics.forEach((t, ti) => {
+        const key = `gh-${ri}-${ti}`;
+        const status = getStatus(key);
+        const sc = statusConfig[status];
+        const row = document.createElement('div'); row.className='tracker-topic-row';
+        row.innerHTML = `<div style="width:10px;height:10px;border-radius:50%;background:${sc.color};flex-shrink:0"></div><div class="tracker-topic-name">${t.name}</div><select class="status-select" style="color:${sc.color};border-color:${sc.color}44"><option value="not-started" ${status==='not-started'?'selected':''}>Not Started</option><option value="assigned" ${status==='assigned'?'selected':''}>Assigned</option><option value="in-progress" ${status==='in-progress'?'selected':''}>In Progress</option><option value="completed" ${status==='completed'?'selected':''}>Completed</option></select>`;
+        row.querySelector('select').addEventListener('change', e => { setStatus(key, e.target.value); renderGithub(); });
+        body.appendChild(row);
+      });
+      card.appendChild(body);
+    }
+    c.appendChild(card);
+  });
+}
+
 function renderCognizant() {
   const c = document.getElementById('cognizant-container');
   c.innerHTML = `<div style="font-size:10px;color:#F72585;letter-spacing:3px;font-family:monospace;margin-bottom:14px">🎯 FOCUS AREAS FOR COGNIZANT</div>${cognizantData.focusAreas.map(f=>`<div class="cog-card"><div class="cog-label">${f.title}</div><div class="cog-text">${f.detail}</div></div>`).join('')}<div style="font-size:10px;color:#FFD93D;letter-spacing:3px;font-family:monospace;margin:20px 0 14px">⭐ STAR STORIES TO PREPARE</div>${cognizantData.starStories.map(s=>`<div class="star-card"><div class="star-label">${s.title}</div><div class="star-text">${s.story.replace(/\n/g,'<br>')}</div></div>`).join('')}`;
@@ -710,6 +763,7 @@ renderTracker();
 renderPrep();
 renderMarket();
 renderCognizant();
+renderGithub();
 </script>
 </body>
 </html>
